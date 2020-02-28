@@ -27,25 +27,25 @@ class Frota
 
 class Viatura
 {
-	static function KmsAnteriores($matricula, $combustivelTipo, $dataInicial = NULL)
+	static function RegistoAnterior($matricula, $combustivelTipo, $dataInicial = NULL)
 	{
 		global $database;
 
-		$kms = 0;
+		$registo = ['kms' => '0', 'litros' => '0'];
 
 		if(is_null($dataInicial))
 			$dataInicial =  date("Y-m-d");
 
 		$result = $database->query("
-								SELECT viatura_kms FROM viaturas_abastecimentos 
+								SELECT viatura_kms as kms, combustivel_litros as litros FROM viaturas_abastecimentos 
 								WHERE viatura_matricula = '{$matricula}' AND combustivel_tipo = '{$combustivelTipo}' AND abastecimento_data < '{$dataInicial}' 
 								ORDER BY abastecimento_data DESC
 							");
 
-		if($result->num_rows)
-			$kms = $result->fetch_assoc()['viatura_kms'];
+		if($result && $result->num_rows)
+			$registo = $result->fetch_assoc();
 
-		return $kms;
+		return $registo;
 	}
 
 	static function FormatarMatricula($data)
@@ -58,5 +58,26 @@ class Viatura
 		}
 
 		return $matricula;
+	}
+
+	static function Icon($tipoViatura)
+	{
+		// $icon = "fas fa-car";
+
+		switch ($tipoViatura) {
+			case 'MOTA':
+				$icon = "fas fa-motorcycle";
+				break;
+			case 'CARRO':
+				$icon = "fas fa-car";
+				break;
+			case 'CARRINHA':
+				$icon = "fas fa-shuttle-van";
+				break;
+			case 'MINIBUS':
+				$icon = "fas fa-bus-alt";
+				break;
+		}
+		return $icon;
 	}
 }
