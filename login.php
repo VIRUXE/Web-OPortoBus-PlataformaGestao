@@ -109,9 +109,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 											<input type="tel" name="inputTelemovel" class="form-control form-control-user" aria-describedby="userHelp" placeholder="Número de Telemóvel" value="<?= $telemovel ? $telemovel : '' ?>" pattern="[9]{1}[1-6]{1}[0-9]{7}" maxlength="9" required>
 										</div>
 										<div class="form-group">
-											<input type="password"name="inputPIN"  class="form-control form-control-user" title="O PIN tem de ter obrigatoriamente 4 números." placeholder="PIN" pattern="[0-9]{4}" maxlength="4"required>
+											<input type="password" id="inputPIN" name="inputPIN" class="form-control form-control-user" title="O PIN tem de ter obrigatoriamente 4 números." placeholder="PIN" pattern="[0-9]{4}" maxlength="4"required>
 										</div>
-										<button type="submit" class="btn btn-warning btn-block">Iniciar Sessão</button>
+										<button id="btnIniciar" type="submit" class="btn btn-warning btn-block">Iniciar Sessão</button>
 									</form>
 								</div>
 							</div>
@@ -125,5 +125,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 	<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 	<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 	<script src="js/sb-admin-2.min.js"></script>
+	<script type="text/javascript">
+		$('#inputPIN').keyup(function () {
+			if (this.value.length == 4) {
+				$('#btnIniciar').click();
+			}
+		});
+	</script>
 </body>
 </html>
