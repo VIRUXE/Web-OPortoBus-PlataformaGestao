@@ -6,10 +6,10 @@ function CorMedia($media)
 {
 	$cor = "success";
 
-	if ($media >= 8.0)
+	if ($media >= 10.0)
 		$cor = "warning";
 
-	if ($media >= 11.0)
+	if ($media >= 13.0)
 		$cor = "danger";
 
 	return $cor;
@@ -102,7 +102,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 						<th>Preço p/Litro</th>
 						<th>L/100KM</th>
 						<th>Responsável</th>
-						<th>Criador</th>
 					</tr>
 				</thead>
 				<tfoot>
@@ -116,15 +115,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 						<th>Preço p/Litro</th>
 						<th>L/100KM</th>
 						<th>Responsável</th>
-						<th>Criador</th>
 					</tr>
 				</tfoot>
 				<tbody>
 					<?php
 					$result = $database->query("
-									SELECT viatura_matricula, viaturas.nome as label, viaturas.tipo as tipo, abastecimento_data, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(utilizadores.nome_primeiro, '. ',SUBSTRING(utilizadores.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(utilizadores.nome_primeiro, '. ',SUBSTRING(utilizadores.nome_ultimo,1,1)) AS criador, criador_telemovel FROM viaturas_abastecimentos 
+									SELECT viatura_matricula, viaturas.nome as label, viaturas.tipo as tipo, abastecimento_data, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(r.nome_primeiro, '. ',SUBSTRING(r.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(c.nome_primeiro, '. ',SUBSTRING(c.nome_ultimo,1,1)) AS criador, criador_telemovel FROM viaturas_abastecimentos 
 									LEFT JOIN viaturas ON viaturas_abastecimentos.viatura_matricula = viaturas.matricula 
-									LEFT JOIN utilizadores ON viaturas_abastecimentos.responsavel_telemovel AND viaturas_abastecimentos.criador_telemovel = utilizadores.telemovel
+									LEFT JOIN utilizadores r ON viaturas_abastecimentos.responsavel_telemovel = r.telemovel 
+									LEFT JOIN utilizadores c ON viaturas_abastecimentos.criador_telemovel = c.telemovel
 									ORDER BY abastecimento_data DESC
 								");
 
@@ -132,23 +131,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 						trigger_error('Query Inválida: ' . $database->error);
 					else {
 						while ($abast = $result->fetch_assoc()) {
-							$kmsAnteriores = Viatura::KmsAnteriores($abast["viatura_matricula"], $abast["combustivel_tipo"], $abast["abastecimento_data"]);
+							$registoAnterior = Viatura::RegistoAnterior($abast["viatura_matricula"], $abast["combustivel_tipo"], $abast["abastecimento_data"]);
 
 							$kmsTotais = $abast["viatura_kms"];
-							$kmsPercorridos = $kmsAnteriores ? $kmsTotais - $kmsAnteriores : 0;
+							$kmsPercorridos = $registoAnterior['kms'] ? $kmsTotais - $registoAnterior['kms'] : 0;
 							$mediaCons = $kmsPercorridos ? round(100 / ($kmsPercorridos / $abast["combustivel_litros"]), 2) : "0.0";
 
 							echo '<tr>';
 							echo '<th title="' . date('d-m-Y H:i', strtotime($abast["abastecimento_data"])) . '" nowrap>' . date('d-m', strtotime($abast["abastecimento_data"])) . '</th>';
-							echo '<td nowrap><i class="fas fa-' . ($abast["tipo"] == "LIGEIRO" ? "car" : "bus") . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abast["viatura_matricula"] . '" title="' . $abast["label"] . '">' . Viatura::FormatarMatricula($abast["viatura_matricula"]) . '</a></td>';
+							echo '<td nowrap><i class="' . Viatura::Icon($abast["tipo"]) . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abast["viatura_matricula"] . '" title="' . $abast["label"] . '">' . Viatura::FormatarMatricula($abast["viatura_matricula"]) . '</a></td>';
 							echo '<td class="text-right">' . $kmsTotais . '</td>';
-							echo '<td class="text-center" title="' . $kmsAnteriores . '">' . $kmsPercorridos . '</td>';
+							echo '<td class="text-center" title="' . $registoAnterior['kms'] . 'KMS em '.date('d-m-Y H:i', strtotime($abast["abastecimento_data"])).'">' . $kmsPercorridos . '</td>';
 							echo '<td>' . $abast["combustivel_tipo"] . '</td>';
 							echo '<td class="text-center">' . $abast["combustivel_litros"] . '</td>';
 							echo '<td class="text-center">' . $abast["combustivel_valor"] . '€</td>';
 							echo '<td class="text-' . CorMedia($mediaCons) . '">' . $mediaCons . 'L</td>';
-							echo '<td title="'.$abast["responsavel_telemovel"].'" nowrap><i class="' . Utilizador::Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';
-							echo '<td title="'.$abast["criador_telemovel"].'" nowrap><i class="' . Utilizador::Icon($abast["criador_telemovel"]) . '"></i> ' . $abast["criador"] . '</td>';
+							echo '<td class="text-gray-800" title="Registado por: ' . $abast["criador"] . '" nowrap><i class="' . Utilizador::Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';
 							echo '</tr>';
 						}
 					}
