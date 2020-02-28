@@ -50,13 +50,8 @@ class Viatura
 
 	function ObterKmsAnteriores($matricula)
 	{
-		require_once 'config.php';
-
-		$database = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+		global $database;
 	 
-	if($database === false)
-	    die("ERRO: Impossível estabelecer ligação com a base de dados. " . $database->connect_error);
-
 		$kms = null;
 
 		$result = $database->query("SELECT viatura_kms as kms FROM viaturas_abastecimentos WHERE viatura_matricula LIKE '$matricula' ORDER BY DATA DESC LIMIT 1,1");
