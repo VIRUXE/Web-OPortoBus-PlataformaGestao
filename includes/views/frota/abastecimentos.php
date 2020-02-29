@@ -72,8 +72,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				<label>Litros</label>
 				<input type="number" name="combustivelLitros" class="form-control" placeholder="12.34" step="0.01" onkeypress="return isNumberKey(event,this)" required>
 
-				<label>Preço p/Litro</label>
-				<input type="number" name="combustivelPreco" class="form-control" placeholder="12.34" step="0.01" onkeypress="return isNumberKey(event,this)" required>
+				<label>Preço p/Litro</label><!-- 1.33 para a MaiaTransportes -->
+				<input type="number" name="combustivelPreco" class="form-control" placeholder="12.34" step="0.01" onkeypress="return isNumberKey(event,this)" value="1.33" required>
 
 				<button type="submit" name="adicionarAbastecimento" class="btn btn-success btn-icon-split my-1">
 					<span class="icon text-white-50">
@@ -95,34 +95,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 			<table class="table table-sm table-borderless table-hover" id="dataTable" width="100%" cellspacing="0">
 				<thead>
 					<tr>
-						<th>Data</th>
-						<th>Viatura</th>
-						<th>KMs Totais</th>
-						<th>KMs Percorridos</th>
-						<th>Combustível</th>
-						<th>Litros</th>
-						<th>Preço p/Litro</th>
-						<th>L/100KM</th>
-						<th>Responsável</th>
+						<th class="text-left">Data</th>
+						<th class="text-center">Viatura</th>
+						<th class="text-right">KMs Totais</th>
+						<th class="text-center">KMs Percorridos</th>
+						<th class="text-center">Combustível</th>
+						<th class="text-center">Litros</th>
+						<th class="text-center">Custo</th>
+						<th class="text-right">L/100KM</th>
+						<th class="text-right">Responsável</th>
 					</tr>
 				</thead>
 				<tfoot>
 					<tr>
-						<th>Data</th>
-						<th>Viatura</th>
-						<th>KMs Totais</th>
-						<th>KMs Percorridos</th>
-						<th>Combustível</th>
-						<th>Litros</th>
-						<th>Preço p/Litro</th>
-						<th>L/100KM</th>
-						<th>Responsável</th>
+						<th class="text-left">Data</th>
+						<th class="text-center">Viatura</th>
+						<th class="text-right">KMs Totais</th>
+						<th class="text-center">KMs Percorridos</th>
+						<th class="text-center">Combustível</th>
+						<th class="text-center">Litros</th>
+						<th class="text-center">Custo</th>
+						<th class="text-right">L/100KM</th>
+						<th class="text-right">Responsável</th>
 					</tr>
 				</tfoot>
 				<tbody>
 					<?php
 					$result = $database->query("
-									SELECT viatura_matricula, viaturas.nome as label, viaturas.tipo as tipo, abastecimento_data, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(r.nome_primeiro, '. ',SUBSTRING(r.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(c.nome_primeiro, '. ',SUBSTRING(c.nome_ultimo,1,1)) AS criador, criador_telemovel FROM viaturas_abastecimentos 
+									SELECT viatura_matricula, viaturas.nome as label, viaturas.tipo as tipo, abastecimento_data, abastecimento_localizacao, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(r.nome_primeiro, '. ',SUBSTRING(r.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(c.nome_primeiro, '. ',SUBSTRING(c.nome_ultimo,1,1)) AS criador, criador_telemovel FROM viaturas_abastecimentos 
 									LEFT JOIN viaturas ON viaturas_abastecimentos.viatura_matricula = viaturas.matricula 
 									LEFT JOIN utilizadores r ON viaturas_abastecimentos.responsavel_telemovel = r.telemovel 
 									LEFT JOIN utilizadores c ON viaturas_abastecimentos.criador_telemovel = c.telemovel
@@ -138,17 +138,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							$kmsTotais = $abast["viatura_kms"];
 							$kmsPercorridos = $registoAnterior['kms'] ? $kmsTotais - $registoAnterior['kms'] : 0;
 							$mediaCons = $kmsPercorridos ? round(100 / ($kmsPercorridos / $abast["combustivel_litros"]), 2) : "0.0";
+							$custo = round($abast["combustivel_valor"] * $abast["combustivel_litros"], 2, PHP_ROUND_HALF_EVEN);
 
 							echo '<tr>';
-							echo '<th title="' . date('d-m-Y H:i', strtotime($abast["abastecimento_data"])) . '" nowrap>' . date('d-m', strtotime($abast["abastecimento_data"])) . '</th>';
-							echo '<td nowrap><i class="' . Viatura::Icon($abast["tipo"]) . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abast["viatura_matricula"] . '" title="' . $abast["label"] . '">' . Viatura::FormatarMatricula($abast["viatura_matricula"]) . '</a></td>';
+							echo '<th class="text-left" title="' . date('d-m-Y H:i', strtotime($abast["abastecimento_data"])) . '" nowrap>' . date('d-m', strtotime($abast["abastecimento_data"])) . '</th>';
+							echo '<td class="text-center" nowrap><i class="' . Viatura::Icon($abast["tipo"]) . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abast["viatura_matricula"] . '" title="' . $abast["label"] . '">' . Viatura::FormatarMatricula($abast["viatura_matricula"]) . '</a></td>';
 							echo '<td class="text-right">' . $kmsTotais . '</td>';
 							echo '<td class="text-center" title="' . $registoAnterior['kms'] . 'KMS em '.date('d-m-Y H:i', strtotime($abast["abastecimento_data"])).'">' . $kmsPercorridos . '</td>';
-							echo '<td>' . $abast["combustivel_tipo"] . '</td>';
+							echo '<td class="text-center">' . $abast["combustivel_tipo"] . '</td>';
 							echo '<td class="text-center">' . $abast["combustivel_litros"] . '</td>';
-							echo '<td class="text-center">' . $abast["combustivel_valor"] . '€</td>';
-							echo '<td class="text-' . CorMedia($mediaCons) . '">' . $mediaCons . 'L</td>';
-							echo '<td class="text-gray-800" title="Registado por: ' . $abast["criador"] . '" nowrap><i class="' . Utilizador::Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';
+							echo '<td class="text-center" title="' . $abast["combustivel_valor"] . 'EUR ('.$abast["abastecimento_localizacao"].')">' . $custo . '€</td>';
+							echo '<td class="text-right text-' . CorMedia($mediaCons) . '">' . $mediaCons . 'L</td>';
+							echo '<td class="text-right text-gray-800" title="Registado por: ' . $abast["criador"] . '" nowrap><i class="' . Utilizador::Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';
 							echo '</tr>';
 						}
 					}
