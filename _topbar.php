@@ -115,9 +115,9 @@
 						<div class="topbar-divider d-none d-sm-block"></div>
 						<!-- Opções do Utilizador -->
 						<li class="nav-item dropdown no-arrow">
-							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?= $_SESSION['utilizador']['cargo'] ?>">
 								<span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= Utilizador::FormatarNome(); ?></span>
-								<i class="fas fa-user"></i>
+								<i class="<?= Utilizador::Icon(); ?>"></i>
 							</a>
 							<!-- Utilizador - Dropwdown -->
 							<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">

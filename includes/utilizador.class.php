@@ -13,31 +13,33 @@ class Utilizador
 		return $nome;
 	}
 
-	// 'OUTRO','VIGILANTE','MOTORISTA','MOTORISTAPESADOS','DONO','DESENVOLVEDOR'
-
-	static function Icon($userTelemovel)
+	static function Icon($userTelemovel = NULL)// 'OUTRO','VIGILANTE','MOTORISTA','MOTORISTAPESADOS','DONO','DESENVOLVEDOR'
 	{
-		global $database;
-	 
 		$icon = "fas fa-user-alien";
+		$cargo = $_SESSION['utilizador']['cargo'];
 
-		$result = $database->query("SELECT cargo FROM utilizadores WHERE telemovel = '$userTelemovel' LIMIT 1");
-		if($result && $result->num_rows > 0)
+		if(!is_null($userTelemovel))
 		{
-			switch ($result->fetch_assoc()['cargo'])
-			{
-				case 'DESENVOLVEDOR':
-					$icon = "fas fa-user-secret";
-					break;
+			global $database;
 
-				case 'DONO':
-					$icon = "fas fa-user-crown";
-					break;
+			$result = $database->query("SELECT cargo FROM utilizadores WHERE telemovel = '$userTelemovel' LIMIT 1");
+				if($result && $result->num_rows)
+					$cargo = $result->fetch_assoc()['cargo'];
+		}
 
-				case 'MOTORISTAPESADOS':
-					$icon = "fas fa-user-tie";
-					break;
-			}
+		switch ($cargo)
+		{
+			case 'DESENVOLVEDOR':
+				$icon = "fas fa-user-secret";
+				break;
+
+			case 'DONO':
+				$icon = "fas fa-user-crown";
+				break;
+
+			case 'MOTORISTAPESADOS':
+				$icon = "fas fa-user-tie";
+				break;
 		}
 
 		return $icon;
