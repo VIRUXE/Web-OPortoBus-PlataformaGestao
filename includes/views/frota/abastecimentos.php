@@ -20,16 +20,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	if (isset($_POST['adicionarAbastecimento'])) {
 		$viatura 		= $_POST['viaturaAbastecida'];
 		$combustivel 	= $_POST['combustivelTipo'];
-		$litros 		= $_POST['combustivelLitros'];
 		$kms 			= $_POST['kmsViatura'];
+		$litros 		= $_POST['combustivelLitros'];
+		$precoLitro		= $_POST['combustivelPreco'];
+		$responsavel 	= $_SESSION['utilizador']['telemovel'];
 
 		// Validar os dados primeiro
 
 
 		// Enviar para a base de dados
 		$result = $database->query("
-			INSERT INTO viaturas_abastecimentos (viatura_matricula, viatura_kms, combustivel_tipo, combustivel_litros, responsavel_telemovel, criador_telemovel)
-			VALUES('$viatura', '$kms', '$combustivel', '$litros', '{$_SESSION['utilizador']['telemovel']}', '{$_SESSION['utilizador']['telemovel']}')");
+			INSERT INTO viaturas_abastecimentos (viatura_matricula, viatura_kms, combustivel_tipo, combustivel_litros, combustivel_valor, responsavel_telemovel, criador_telemovel)
+			VALUES('$viatura', '$kms', '$combustivel', '$litros', '$precoLitro', '$responsavel', '{$_SESSION['utilizador']['telemovel']}')");
 
 		if (!$result)
 			trigger_error('Query Inválida: ' . $database->error);
