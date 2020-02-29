@@ -62,8 +62,6 @@ class Viatura
 
 	static function Icon($tipoViatura)
 	{
-		// $icon = "fas fa-car";
-
 		switch ($tipoViatura) {
 			case 'MOTA':
 				$icon = "fas fa-motorcycle";

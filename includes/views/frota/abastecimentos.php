@@ -1,6 +1,5 @@
 <?php
 require_once 'includes/frota/frota.class.php';
-require_once 'includes/utilizador.class.php';
 
 function CorMedia($media)
 {
@@ -23,6 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$kms 			= $_POST['kmsViatura'];
 		$litros 		= $_POST['combustivelLitros'];
 		$precoLitro		= $_POST['combustivelPreco'];
+		$localizacao	= $_POST['localizacao'];
 		$responsavel 	= $_SESSION['utilizador']['telemovel'];
 
 		// Validar os dados primeiro
@@ -30,8 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 		// Enviar para a base de dados
 		$result = $database->query("
-			INSERT INTO viaturas_abastecimentos (viatura_matricula, viatura_kms, combustivel_tipo, combustivel_litros, combustivel_valor, responsavel_telemovel, criador_telemovel)
-			VALUES('$viatura', '$kms', '$combustivel', '$litros', '$precoLitro', '$responsavel', '{$_SESSION['utilizador']['telemovel']}')");
+			INSERT INTO viaturas_abastecimentos (viatura_matricula, abastecimento_localizacao, viatura_kms, combustivel_tipo, combustivel_litros, combustivel_valor, responsavel_telemovel, criador_telemovel)
+			VALUES('$viatura', '$localizacao', '$kms', '$combustivel', '$litros', '$precoLitro', '$responsavel', '{$_SESSION['utilizador']['telemovel']}')");
 
 		if (!$result)
 			trigger_error('Query Inválida: ' . $database->error);
@@ -73,7 +73,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				<input type="number" name="combustivelLitros" class="form-control" placeholder="12.34" step="0.01" onkeypress="return isNumberKey(event,this)" required>
 
 				<label>Preço p/Litro</label><!-- 1.33 para a MaiaTransportes -->
-				<input type="number" name="combustivelPreco" class="form-control" placeholder="12.34" step="0.01" onkeypress="return isNumberKey(event,this)" value="1.33" required>
+				<input type="number" name="combustivelPreco" class="form-control" placeholder="12.34" step="0.01" onkeypress="return isNumberKey(event,this)" placeholder="1.33" required>
+				<small id="emailHelp" class="form-text text-muted">O preço por defeito para a MaiaTransportes é de 1.33€</small>
+
+				<label>Localização</label>
+				<input name="localizacao" type="text" class="form-control" placeholder="MaiaTransportes" required>
 
 				<button type="submit" name="adicionarAbastecimento" class="btn btn-success btn-icon-split my-1">
 					<span class="icon text-white-50">
@@ -138,17 +142,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							$kmsTotais = $abast["viatura_kms"];
 							$kmsPercorridos = $registoAnterior['kms'] ? $kmsTotais - $registoAnterior['kms'] : 0;
 							$mediaCons = $kmsPercorridos ? round(100 / ($kmsPercorridos / $abast["combustivel_litros"]), 2) : "0.0";
-							$custo = round($abast["combustivel_valor"] * $abast["combustivel_litros"], 2, PHP_ROUND_HALF_EVEN);
+							$custoAbastecimento = round($abast["combustivel_valor"] * $abast["combustivel_litros"], 2, PHP_ROUND_HALF_EVEN);
+							$custoKM = $kmsPercorridos ? round($abast["combustivel_litros"] / $kmsPercorridos, 2) : 0;
 
 							echo '<tr>';
 							echo '<th class="text-left" title="' . date('d-m-Y H:i', strtotime($abast["abastecimento_data"])) . '" nowrap>' . date('d-m', strtotime($abast["abastecimento_data"])) . '</th>';
-							echo '<td class="text-center" nowrap><i class="' . Viatura::Icon($abast["tipo"]) . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abast["viatura_matricula"] . '" title="' . $abast["label"] . '">' . Viatura::FormatarMatricula($abast["viatura_matricula"]) . '</a></td>';
+							echo '<td class="text-center" nowrap><i class="' . Viatura::Icon($abast["tipo"]) . '" title="' . $abast["label"] . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abast["viatura_matricula"] . '">' . Viatura::FormatarMatricula($abast["viatura_matricula"]) . '</a></td>';
 							echo '<td class="text-right">' . $kmsTotais . '</td>';
 							echo '<td class="text-center" title="' . $registoAnterior['kms'] . 'KMS em '.date('d-m-Y H:i', strtotime($abast["abastecimento_data"])).'">' . $kmsPercorridos . '</td>';
 							echo '<td class="text-center">' . $abast["combustivel_tipo"] . '</td>';
 							echo '<td class="text-center">' . $abast["combustivel_litros"] . '</td>';
-							echo '<td class="text-center" title="' . $abast["combustivel_valor"] . 'EUR ('.$abast["abastecimento_localizacao"].')">' . $custo . '€</td>';
-							echo '<td class="text-right text-' . CorMedia($mediaCons) . '">' . $mediaCons . 'L</td>';
+							echo '<td class="text-center" title="' . $abast["combustivel_valor"] . '€ ('.$abast["abastecimento_localizacao"].')">' . $custoAbastecimento . '€</td>';
+							echo '<td class="text-right text-' . CorMedia($mediaCons) . '" title="'.$custoKM.'€ por KM">' . $mediaCons . 'L</td>';
 							echo '<td class="text-right text-gray-800" title="Registado por: ' . $abast["criador"] . '" nowrap><i class="' . Utilizador::Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';
 							echo '</tr>';
 						}
