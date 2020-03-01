@@ -93,8 +93,10 @@
 		}
 
 		function showPosition(position) {
-			x.setAttribute("value", "Latitude: " + position.coords.latitude +	" Longitude: " + position.coords.longitude);
+			x.setAttribute("value", position.coords.latitude +	"," + position.coords.longitude);
 		}
+
+		getLocation();
 		</script>
 	</body>
 </html>
