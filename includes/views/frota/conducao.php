@@ -1,6 +1,8 @@
 <?php
 require 'includes/frota/frota.class.php';
 
+// Carregar a sessão activa se existir
+
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
 	// Verificar se está a abrir ou fechar condução
@@ -10,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
 		$result = $database->query("
 			UPDATE viaturas_sessoes 
-			SET data_fim = current_timestamp(), kms_fim = '{$sessao['kms']}', localizacao_fim = POINT({$sessao['gps']['longitude']}, {$sessao['gps']['latitude']}), obs = '{$sessao['observacoes']}', activa = false
+			SET data_final = current_timestamp(), kms_finais = '{$sessao['kms']}', localizacao_final = '".json_encode($sessao['gps'])."', obs = '{$sessao['observacoes']}', activa = false
 			WHERE funcionario_telemovel = '{$_SESSION['utilizador']['telemovel']}' AND activa = true"
 		);
 
@@ -26,8 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 	{
 		$coords = explode(',',$_POST['localizacao']); // Separar por latitude e longitude
 
-		echo json_encode($coords);
-
 		// Construir o array com os dados de condução na SESSION
 		$_SESSION['utilizador']['conducao'] = 
 		[
@@ -40,8 +40,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		$sessao = $_SESSION['utilizador']['conducao']; // Só para ser mais fácil...
 
 		$result = $database->query("
-			INSERT INTO viaturas_sessoes (viatura_matricula, funcionario_telemovel, kms_inicio, localizacao_inicio, obs) 
-			VALUES('{$sessao['viatura']}', '{$_SESSION['utilizador']['telemovel']}', '{$sessao['kms']}', POINT({$sessao['gps']['longitude']}, {$sessao['gps']['latitude']}), '{$sessao['observacoes']}')"
+			INSERT INTO viaturas_sessoes (viatura_matricula, funcionario_telemovel, kms_iniciais, localizacao_inicial, obs) 
+			VALUES('{$sessao['viatura']}', '{$_SESSION['utilizador']['telemovel']}', '{$sessao['kms']}', '".json_encode($sessao['gps'])."', '{$sessao['observacoes']}')"
 		);
 
 		if (!$result)
@@ -60,7 +60,7 @@ $sessaoAtiva = isset($_SESSION['utilizador']['conducao']) ? true : false;
 
 			<div class="card shadow mb-4">
 				<div class="card-header py-3">
-					<h6 class="m-0 font-weight-bold text-<?= $sessaoAtiva ? "danger":"success" ?>"><?= $sessaoAtiva ? "Fecho de Sessão - Viatura ".Viatura::FormatarMatricula($_SESSION['utilizador']['conducao']['viatura']) : "Início de Sessão" ?></h6>
+					<h6 class="m-0 font-weight-bold text-<?= $sessaoAtiva ? "danger":"success" ?>"><?= $sessaoAtiva ? "Fecho de Condução - Viatura ".Viatura::FormatarMatricula($_SESSION['utilizador']['conducao']['viatura']) : "Início de Condução" ?></h6>
 				</div>
 				<div class="card-body">
 					<form class="form-horizontal" action="index.php?ver=frota&categoria=conducao" method="POST">
@@ -99,3 +99,70 @@ $sessaoAtiva = isset($_SESSION['utilizador']['conducao']) ? true : false;
 					</form>
 				</div>
 			</div>
+			<div class="card shadow mb-4">
+	<div class="card-header py-3">
+		<h6 class="m-0 font-weight-bold text-primary">Listagem de Sessões de Condução</h6>
+	</div>
+	<div class="card-body">
+		<div class="table-responsive">
+			<table class="table table-sm table-borderless table-hover" id="dataTable" width="100%" cellspacing="0">
+				<thead>
+					<tr>
+						<th class="text-left">ID</th>
+						<th class="text-center">Viatura</th>
+						<th class="text-center">Funcionário</th>
+						<th class="text-center">Data Inicial</th>
+						<th class="text-center">KMs Iníciais</th>
+						<!-- <th class="text-center">Localização Inicial</th> -->
+						<th class="text-center">Data Final</th>
+						<th class="text-right">KMs Finais</th>
+						<!-- <th class="text-right">Localização Final</th> -->
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th class="text-left">ID</th>
+						<th class="text-center">Viatura</th>
+						<th class="text-center">Funcionário</th>
+						<th class="text-center">Data Inicial</th>
+						<th class="text-center">KMs Iníciais</th>
+						<!-- <th class="text-center">Localização Inicial</th> -->
+						<th class="text-center">Data Final</th>
+						<th class="text-right">KMs Finais</th>
+						<!-- <th class="text-right">Localização Final</th> -->
+					</tr>
+				</tfoot>
+				<tbody>
+					<?php
+					$result = $database->query("
+									SELECT id, viatura_matricula, funcionario_telemovel, CONCAT(u.nome_primeiro, '. ',SUBSTRING(u.nome_ultimo,1,1)) as motorista, data_inicial, kms_iniciais, localizacao_inicial, data_final, kms_finais, localizacao_final, obs, activa FROM viaturas_sessoes 
+									LEFT JOIN utilizadores u ON viaturas_sessoes.funcionario_telemovel = u.telemovel 
+									ORDER BY activa DESC
+								");
+
+					if (!$result)
+						trigger_error('Query Inválida: ' . $database->error);
+					else
+					{
+						while ($conducao = $result->fetch_assoc()) 
+						{
+							echo '<tr'.($conducao['activa'] ? ' class="table-success"' : NULL).'" title="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'">';
+							echo '<th class="text-left">' . $conducao['id'] . '</th>';
+							echo '<td class="text-center">' . Viatura::FormatarMatricula($conducao["viatura_matricula"]) . '</a></td>';
+							echo '<td class="text-center"><i class="' . Utilizador::Icon($conducao["funcionario_telemovel"]) . '"></i> ' . $conducao['motorista'] . '</td>';
+							echo '<td class="text-center">' . $conducao['data_inicial'] . '</td>';
+							echo '<td class="text-center">' . $conducao['kms_iniciais'] . '</td>';
+							// echo '<td class="text-center">' . $conducao['localizacao_inicial'] . '</td>';
+							echo '<td class="text-center">' . $conducao['data_final'] . '</td>';
+							echo '<td class="text-right">' . $conducao['kms_finais'] . '</td>';
+							// echo '<td class="text-right">' . $conducao['localizacao_final'] . '</td>';
+							// echo '<td class="text-right">' .  . '</td>';
+							echo '</tr>';
+						}
+					}
+					?>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
