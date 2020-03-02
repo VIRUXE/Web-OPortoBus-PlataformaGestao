@@ -37,7 +37,7 @@
 								{
 									while($svc = $result->fetch_assoc()) 
 									{
-										echo '<tr class="table-'.($svc["estado"] == 'EFETIVO' || $svc["estado"] == 'RESERVA' ? 'success' : 'warning').'";>';
+										echo '<tr class="table-'.($svc["estado"] == 'EFETIVO' || $svc["estado"] == 'RESERVA' ? 'success' : 'warning').'">';
 										echo '<td>' . $svc["data_criacao"] . '</td>';
 										echo '<td>' . $svc["data_servico_inicio"] . '</td>';
 										echo '<td>' . ($svc["data_servico_fim"] == NULL ? 'Sem fim' : $svc["data_servico_fim"]) . '</td>';
