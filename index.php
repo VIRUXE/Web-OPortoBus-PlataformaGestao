@@ -79,6 +79,7 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 			require 'includes/views/utilizadores.php';
 			break;
 		default: // Carrega a vista de resumo, se não tiver escolhido, ou não existir uma página/categoria
+			echo 'Escolha uma opção da barra de navegação...';
 			// require 'includes/views/resumo.php';
 			break;
 	}
