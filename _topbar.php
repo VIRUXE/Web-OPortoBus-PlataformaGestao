@@ -115,7 +115,7 @@
 						<div class="topbar-divider d-none d-sm-block"></div>
 						<!-- Opções do Utilizador -->
 						<li class="nav-item dropdown no-arrow">
-							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<?= $_SESSION['user']->cargo ?>">
+							<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Cargo: <?= $_SESSION['user']->cargo ?>">
 								<span class="mr-2 d-none d-lg-inline text-gray-600 small"><?= $_SESSION['user']->NomeFormatado(); ?></span>
 								<i class="<?= $_SESSION['user']->Icon(); ?>"></i>
 							</a>
