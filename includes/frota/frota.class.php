@@ -62,17 +62,19 @@ class Viatura
 
 	static function Icon($tipoViatura)
 	{
+		$icon = "fas fa-car-crash";
+		
 		switch ($tipoViatura) {
 			case 'MOTA':
 				$icon = "fas fa-motorcycle";
 				break;
-			case 'CARRO':
+			case 'LIGEIRO':
 				$icon = "fas fa-car";
 				break;
-			case 'CARRINHA':
+			case 'LIGEIROPAX':
 				$icon = "fas fa-shuttle-van";
 				break;
-			case 'MINIBUS':
+			case 'PESADOPAX':
 				$icon = "fas fa-bus-alt";
 				break;
 		}
