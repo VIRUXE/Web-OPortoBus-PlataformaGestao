@@ -6,6 +6,7 @@ if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off")
 	header('Location: ' . $location);
 	exit;
 }
+require 'includes/utilizador.class.php';
 
 session_start();
 
@@ -36,9 +37,8 @@ if(isset($_GET['ver']))
 		$action = $_GET['accao'];
 }
 
-if(isset($_SESSION['utilizador'])) // Carregar o dashboard se o user já estiver carregado
+if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carregado
 {
-	require 'includes/utilizador.class.php';
 	require '_header.php';
 	require '_navbar.php';
 ?>
@@ -79,7 +79,7 @@ if(isset($_SESSION['utilizador'])) // Carregar o dashboard se o user já estiver
 			require 'includes/views/utilizadores.php';
 			break;
 		default: // Carrega a vista de resumo, se não tiver escolhido, ou não existir uma página/categoria
-			require 'includes/views/resumo.php';
+			// require 'includes/views/resumo.php';
 			break;
 	}
 	require '_footer.php';

@@ -1,7 +1,7 @@
 <?php
-$telemovel = $pin = null;
-$rememberme = false;
-$errors = [];
+$telemovel 	= NULL;
+$pin 		= NULL;
+$errors 	= [];
 
 function MostrarErros()
 {
@@ -11,35 +11,22 @@ function MostrarErros()
 
 if($_SERVER["REQUEST_METHOD"] == "POST")
 {
-	$telemovel = $_POST["inputTelemovel"]; $pin = $_POST["inputPIN"];
-	// $rememberme = $_POST["checkRememberMe"];
+	// Efetuar um sanity check aos dados inseridos
+	$telemovel 	= $_POST["inputTelemovel"]; 
+	$pin 		= $_POST["inputPIN"];
 
 	// Verificar na base de dados se o número de telemóvel existe
 	if(!empty($telemovel))
 	{
 		if(!empty($pin))
 		{
-			// Verificar primeiro se o número consta na base de dados
-			$result = $database->query("SELECT NULL FROM utilizadores WHERE telemovel = '$telemovel' LIMIT 1");
-			if ($result->num_rows)
+			if(Utilizador::Existe($telemovel))
 			{
-				$hashedPin = hash('sha256', $pin);
+				$user = new Utilizador($telemovel, $pin);
 
-				// Verificar se o PIN está certo ou ainda é NULL
-				$result = $database->query("SELECT * FROM utilizadores WHERE telemovel = '$telemovel' AND (pin IS NULL OR pin = '$hashedPin') LIMIT 1");
-				if ($result->num_rows)
+				if($user->carregado)
 				{
-					$user = $result->fetch_assoc();
-
-					if($user['pin'] == NULL)// Se ainda não tiver PIN, então definir com o inserido no form
-					{
-						$database->query("UPDATE utilizadores SET pin = '$hashedPin' WHERE telemovel = '$telemovel'");
-						$user['pin'] = $hashedPin;
-					}
-	
-					// Carregar os dados do utilizador
-					$_SESSION['utilizador'] = $user;
-					// echo '<pre>'.var_export($_SESSION['utilizador'], true).'</pre>';
+					$_SESSION['user'] = $user;
 					header('Location: index.php');
 				}
 				else
@@ -109,7 +96,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 											<input type="tel" name="inputTelemovel" class="form-control form-control-user" aria-describedby="userHelp" placeholder="Número de Telemóvel" value="<?= $telemovel ? $telemovel : '' ?>" pattern="[9]{1}[1-6]{1}[0-9]{7}" maxlength="9" required>
 										</div>
 										<div class="form-group">
-											<input type="password" id="inputPIN" name="inputPIN" class="form-control form-control-user" title="O PIN tem de ter obrigatoriamente 4 números." placeholder="PIN" pattern="[0-9]{4}" maxlength="4"required>
+											<input type="password" id="inputPIN" name="inputPIN" class="form-control form-control-user" title="O PIN tem de ter obrigatoriamente 4 números." placeholder="PIN" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required>
 										</div>
 										<button id="btnIniciar" type="submit" class="btn btn-warning btn-block">Iniciar Sessão</button>
 									</form>
