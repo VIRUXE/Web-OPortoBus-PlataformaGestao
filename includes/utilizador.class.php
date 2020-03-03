@@ -15,6 +15,8 @@ class Utilizador
 	public 	$cargo 			= NULL;
 	public 	$ativo 			= false;
 
+	public $conducao		= [];
+
 	public function __construct($userTelemovel, $userPIN)
 	{
 		global $database;
@@ -110,6 +112,7 @@ class Utilizador
 				$icon = "fas fa-user-crown";
 				break;
 
+			case 'MOTORISTA':
 			case 'MOTORISTAPESADOS':
 				$icon = "fas fa-user-tie";
 				break;

@@ -77,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				<small id="emailHelp" class="form-text text-muted">O preço por defeito para a MaiaTransportes é de 1.33€</small>
 
 				<label>Localização</label>
-				<input name="localizacao" type="text" class="form-control" placeholder="MaiaTransportes" required>
+				<input name="localizacao" type="text" class="form-control" placeholder="Ex.: Maia Transportes" required>
 
 				<button type="submit" name="adicionarAbastecimento" class="btn btn-success btn-icon-split my-1">
 					<span class="icon text-white-50">
@@ -89,6 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		</div>
 	</div>
 </div>
+<?php if($_SESSION['user']->cargo == 'DONO' || $_SESSION['user']->cargo == 'DESENVOLVEDOR') { ?>
 <!-- Lista de Abastecimentos -->
 <div class="card shadow mb-4">
 	<div class="card-header py-3">
@@ -126,8 +127,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				<tbody>
 					<?php
 					$result = $database->query("
-									SELECT viatura_matricula, viaturas.nome as label, viaturas.tipo as tipo, abastecimento_data, abastecimento_localizacao, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(r.nome_primeiro, '. ',SUBSTRING(r.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(c.nome_primeiro, '. ',SUBSTRING(c.nome_ultimo,1,1)) AS criador, criador_telemovel FROM viaturas_abastecimentos 
-									LEFT JOIN viaturas ON viaturas_abastecimentos.viatura_matricula = viaturas.matricula 
+									SELECT viatura_matricula, v.nome as label, v.tipo as tipo, abastecimento_data, abastecimento_localizacao, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(r.nome_primeiro, '. ',SUBSTRING(r.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(c.nome_primeiro, '. ',SUBSTRING(c.nome_ultimo,1,1)) AS criador, criador_telemovel FROM viaturas_abastecimentos 
+									LEFT JOIN viaturas v ON viaturas_abastecimentos.viatura_matricula = v.matricula 
 									LEFT JOIN utilizadores r ON viaturas_abastecimentos.responsavel_telemovel = r.telemovel 
 									LEFT JOIN utilizadores c ON viaturas_abastecimentos.criador_telemovel = c.telemovel
 									ORDER BY abastecimento_data DESC
@@ -154,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							echo '<td class="text-center">' . $abast["combustivel_litros"] . '</td>';
 							echo '<td class="text-center" title="' . $abast["combustivel_valor"] . '€ ('.$abast["abastecimento_localizacao"].')">' . $custoAbastecimento . '€</td>';
 							echo '<td class="text-right text-' . CorMedia($mediaCons) . '" title="'.$custoKM.'€ por KM">' . $mediaCons . 'L</td>';
-							echo '<td class="text-right text-gray-800" title="Registado por: ' . $abast["criador"] . '" nowrap><i class="' . Utilizador::Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';
+							echo '<td class="text-center text-gray-800" title="Registado por: ' . $abast["criador"] . '" nowrap><i class="' . $_SESSION['user']->Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';
 							echo '</tr>';
 						}
 					}
@@ -164,3 +165,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		</div>
 	</div>
 </div>
+<?php } ?>
