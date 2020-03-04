@@ -1,3 +1,6 @@
+<?php
+include_once 'includes/common.func.php';
+?>				
 				<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
 					<!-- Toggle do Sidebar -->
@@ -80,18 +83,32 @@
 						<li class="nav-item dropdown no-arrow mx-1">
 							<a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="fas fa-envelope fa-fw"></i>
-								<span class="badge badge-danger badge-counter">7</span>
+								<span class="badge badge-danger badge-counter"><?= $_SESSION['user']->MensagensPorLer() ?></span>
 							</a>
 							<!-- Mensagens - Dropdown -->
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
 								<h6 class="dropdown-header">Mensagens</h6>
-								<a class="dropdown-item d-flex align-items-center" href="#">
+								<?php
+									foreach ($_SESSION['user']->ObterMensagens(4) as $msg) 
+									{
+										echo '
+											<a class="dropdown-item d-flex align-items-center" href="#">
+											<div>
+												<div class="text-truncate">'.$msg['nome_primeiro'].' '.$msg['nome_ultimo'].'</div>
+												<div class="small text-gray-500">'.$msg['titulo'].' · '.timeago($msg['data']).'</div>
+											</div>
+											</a>
+										';
+									}
+									
+								?>
+								<!-- <a class="dropdown-item d-flex align-items-center" href="#">
 									<div class="font-weight-bold">
 										<div class="text-truncate">Mensagem 1</div>
 										<div class="small text-gray-500">Flávio Pereira · 58m</div>
 									</div>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="#">
+								</a> -->
+								<!-- <a class="dropdown-item d-flex align-items-center" href="#">
 									<div>
 										<div class="text-truncate">Mensagem 2</div>
 										<div class="small text-gray-500">Flávio Pereira · 1d</div>
@@ -108,7 +125,7 @@
 										<div class="text-truncate">Mensagem 4</div>
 										<div class="small text-gray-500">Marco Patinha · 2sem</div>
 									</div>
-								</a>
+								</a> -->
 								<a class="dropdown-item text-center small text-gray-500" href="#">Mostrar todas</a>
 							</div>
 						</li>
