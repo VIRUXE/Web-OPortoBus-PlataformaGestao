@@ -1,5 +1,6 @@
 <?php
 require 'includes/frota/frota.class.php';
+require 'includes/geo.class.php';
 
 // Carregar a sessão activa se existir
 $result = $database->query("SELECT viatura_matricula, kms_iniciais, obs FROM viaturas_sessoes WHERE funcionario_telemovel = '{$_SESSION['user']->telemovel}' AND ativa = true");
@@ -21,8 +22,6 @@ else
 		];
 	}
 }
-
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
@@ -191,8 +190,8 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 							echo '<td class="text-left" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'" nowrap>'.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
 							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($conducao["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($conducao["viatura_matricula"]).'</td>';
 							echo '<td class="text-center" nowrap><i class="'.Utilizador::Icon($conducao["funcionario_telemovel"]).'"></i> '.$conducao['motorista'].'</td>';
-							echo '<td class="text-center"><a href="'. (!empty($locInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#') .'">'.date('H:i', strtotime($conducao['data_inicial'])).'</a></td>';
-							echo '<td class="text-center"><a href="'. (!empty($locFinal) ? 'https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/' : '#') .'">'.date('H:i', strtotime($conducao['data_final'])).'</a></td>';
+							echo '<td class="text-center" nowrap><a href="'. (!empty($locInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#') .'">'.date('H:i', strtotime($conducao['data_inicial'])).' (<small>'.GEO::ObterEnderecoPorCoords($locInicial['latitude'], $locInicial['longitude']).'</small>)</a></td>';
+							echo '<td class="text-center" nowrap><a href="'. (!empty($locFinal) ? 'https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/' : '#') .'">'.date('H:i', strtotime($conducao['data_final'])).' (<small>'.(!empty($locFinal) ? GEO::ObterEnderecoPorCoords($locFinal['latitude'], $locFinal['longitude']) : 'Indefinido').'</small>)</a></td>';
 							echo '<td class="text-right" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos	> 0 ? $conducao['kms_finais'] : "Indefinido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos : "Indefinido").'</td>';
 							echo '</tr>';
 						}
