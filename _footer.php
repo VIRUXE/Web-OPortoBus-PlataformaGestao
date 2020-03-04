@@ -97,6 +97,12 @@
 		}
 
 		getLocation();
+
+		$(function () {
+			$('[data-toggle="popover"]').popover({
+				delay: { "show": 250, "hide": 250 }
+			})
+		})
 		</script>
 	</body>
 </html>
