@@ -127,7 +127,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 				<tbody>
 					<?php
 					$result = $database->query("
-									SELECT viatura_matricula, v.nome as label, v.tipo as tipo, abastecimento_data, abastecimento_localizacao, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(r.nome_primeiro, '. ',SUBSTRING(r.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(c.nome_primeiro, '. ',SUBSTRING(c.nome_ultimo,1,1)) AS criador, criador_telemovel FROM viaturas_abastecimentos 
+									SELECT viatura_matricula, v.nome as label, v.tipo as tipo, abastecimento_data, abastecimento_localizacao, viatura_kms, CONCAT(UCASE(LEFT(combustivel_tipo, 1)), LCASE(SUBSTRING(combustivel_tipo, 2))) AS combustivel_tipo, combustivel_litros, combustivel_valor, CONCAT(r.nome_primeiro, '. ',SUBSTRING(r.nome_ultimo,1,1)) AS responsavel, responsavel_telemovel, CONCAT(c.nome_primeiro, '. ',SUBSTRING(c.nome_ultimo,1,1)) AS criador, criador_telemovel 
+									FROM viaturas_abastecimentos 
 									LEFT JOIN viaturas v ON viaturas_abastecimentos.viatura_matricula = v.matricula 
 									LEFT JOIN utilizadores r ON viaturas_abastecimentos.responsavel_telemovel = r.telemovel 
 									LEFT JOIN utilizadores c ON viaturas_abastecimentos.criador_telemovel = c.telemovel
@@ -137,7 +138,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 					if (!$result)
 						trigger_error('Query Inválida: ' . $database->error);
 					else {
-						while ($abast = $result->fetch_assoc()) {
+						while ($abast = $result->fetch_assoc())
+						{
 							$registoAnterior = Viatura::RegistoAnterior($abast["viatura_matricula"], $abast["combustivel_tipo"], $abast["abastecimento_data"]);
 
 							$kmsTotais = $abast["viatura_kms"];
