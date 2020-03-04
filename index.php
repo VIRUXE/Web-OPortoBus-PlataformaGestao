@@ -14,6 +14,7 @@ include_once 'config.php';
 
 $database = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 $database->set_charset("utf8");
+$database->query("SET time_zone='+00:00'");
 
 if($database->connect_error)
 	die("ERRO FATAL: " . $database->connect_error);
@@ -58,6 +59,14 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 					break;
 				default:
 					require 'includes/views/servicos.php';
+					break;
+			}
+			break;
+		case 'transporteescolar':
+			switch ($category) 
+			{
+				case 'criancas':
+					require 'includes/views/transporteescolar/criancas.php';
 					break;
 			}
 			break;

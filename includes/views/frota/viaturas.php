@@ -1,5 +1,5 @@
 <?php
-include 'includes/frota/viatura.class.php';
+include 'includes/frota/frota.class.php';
 ?>
 		<h1 class="h3 mb-4 text-gray-800">Viaturas</h1>
 

@@ -19,20 +19,20 @@
 					<i class="fas fa-fw fa-gas-pump"></i>
 					<span>Abastecimento</span></a>
 			</li>
-			<!-- <hr class="sidebar-divider">
+			<hr class="sidebar-divider">
 			<div class="sidebar-heading">Transporte Escolar</div>
 			<li class="nav-item">
-				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+				<a class="nav-link" href="index.php?ver=transporteescolar&categoria=criancas">
 					<i class="fas fa-fw fa-child"></i>
 					<span>Crianças</span>
 				</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+				<a class="nav-link" href="#">
 					<i class="fas fa-fw fa-route"></i>
 					<span>Rotas</span>
 				</a>
-			</li> -->
+			</li>
 <?php if($_SESSION['user']->cargo == 'DONO' || $_SESSION['user']->cargo == 'DESENVOLVEDOR') { ?>
 			<hr class="sidebar-divider">
 			<div class="sidebar-heading">Empresa</div>
