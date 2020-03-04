@@ -132,19 +132,16 @@ class Utilizador
 		$result = $database->query("
 			SELECT id, data, de.nome_primeiro as nome_primeiro, de.nome_ultimo as nome_ultimo, titulo, lida 
 			FROM utilizadores_mensagens 
-			INNER JOIN utilizadores de ON utilizadores_mensagens.de_telemovel = de.telemovel
+			LEFT JOIN utilizadores de ON utilizadores_mensagens.de_telemovel = de.telemovel
 			WHERE para_telemovel = '$this->telemovel' 
 			LIMIT $quantidade");
 
 		if($result && $result->num_rows)
+		{
 			while ($mensagem = $result->fetch_assoc())
-			{
-				print_r($mensagem);
 				$mensagens[] = $mensagem;
-			}
-
-			var_dump($mensagens);
-
+		}
+		
 		return $mensagens;
 	}
 

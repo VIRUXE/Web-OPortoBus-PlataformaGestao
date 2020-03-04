@@ -44,7 +44,7 @@ include_once 'includes/common.func.php';
 							</a>
 							<!-- Alertas - Dropdown -->
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-								<h6 class="dropdown-header">Alertas</h6>
+								<h6 class="dropdown-header"><i class="fas fa-bell fa-fw"></i> Alertas</h6>
 								<a class="dropdown-item d-flex align-items-center" href="#">
 									<div class="mr-3">
 										<div class="icon-circle bg-primary"><i class="fas fa-file-alt text-white"></i></div>
@@ -76,7 +76,7 @@ include_once 'includes/common.func.php';
 										A viatura '00-xx-00' está com um consumo exagerado
 									</div>
 								</a>
-								<a class="dropdown-item text-center small text-gray-500" href="#">Mostrar todos</a>
+								<a class="dropdown-item text-center small text-gray-500" href="index.php?ver=alertas">Mostrar todos</a>
 							</div>
 						</li>
 						<!-- Mensagens -->
@@ -87,13 +87,13 @@ include_once 'includes/common.func.php';
 							</a>
 							<!-- Mensagens - Dropdown -->
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
-								<h6 class="dropdown-header">Mensagens</h6>
+								<h6 class="dropdown-header"><i class="fas fa-inbox-in fa-fw"></i> Mensagens</h6>
 								<?php
 									foreach ($_SESSION['user']->ObterMensagens(4) as $msg) 
 									{
 										echo '
-											<a class="dropdown-item d-flex align-items-center" href="#">
-											<div>
+											<a class="dropdown-item d-flex align-items-center" href="index.php?ver=mensagem&id='.$msg['id'].'">
+											<div'. (!$msg['lida'] ? ' class="font-weight-bold"' : NULL).'>
 												<div class="text-truncate">'.$msg['nome_primeiro'].' '.$msg['nome_ultimo'].'</div>
 												<div class="small text-gray-500">'.$msg['titulo'].' · '.timeago($msg['data']).'</div>
 											</div>
@@ -102,31 +102,8 @@ include_once 'includes/common.func.php';
 									}
 									
 								?>
-								<!-- <a class="dropdown-item d-flex align-items-center" href="#">
-									<div class="font-weight-bold">
-										<div class="text-truncate">Mensagem 1</div>
-										<div class="small text-gray-500">Flávio Pereira · 58m</div>
-									</div>
-								</a> -->
-								<!-- <a class="dropdown-item d-flex align-items-center" href="#">
-									<div>
-										<div class="text-truncate">Mensagem 2</div>
-										<div class="small text-gray-500">Flávio Pereira · 1d</div>
-									</div>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="#">
-									<div>
-										<div class="text-truncate">Mensagem 3</div>
-										<div class="small text-gray-500">Flávio Pereira · 2d</div>
-									</div>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="#">
-									<div>
-										<div class="text-truncate">Mensagem 4</div>
-										<div class="small text-gray-500">Marco Patinha · 2sem</div>
-									</div>
-								</a> -->
-								<a class="dropdown-item text-center small text-gray-500" href="#">Mostrar todas</a>
+								<a class="dropdown-item text-center small text-gray-500" href="index.php?ver=mensagens"><i class="fas fa-mail-bulk"></i> Mostrar todas</a>
+								<a class="dropdown-item text-center small font-weight-bold text-gray-600" href="index.php?ver=mensagens"><i class="fas fa-paper-plane"></i> Enviar Mensagem</a>
 							</div>
 						</li>
 						<div class="topbar-divider d-none d-sm-block"></div>
