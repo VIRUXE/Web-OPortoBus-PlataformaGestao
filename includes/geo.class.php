@@ -1,6 +1,4 @@
 <?php
-define("GOOGLEMAPS_KEY", "AIzaSyB8nG-N3IoYESncQ4Qjn9UpCoCphDPOeTg");
-
 class GEO
 {
 	public static function ObterEnderecoPorCoords($latitude, $longitude)
