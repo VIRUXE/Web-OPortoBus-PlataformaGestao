@@ -86,7 +86,7 @@ class Utilizador
 	}
 
 	public static function Icon($userTelemovel = NULL)
-	{// 'OUTRO','VIGILANTE','MOTORISTA','MOTORISTAPESADOS','DONO','DESENVOLVEDOR'
+	{
 		$cargo = NULL;
 		$icon = "fas fa-user-alien";
 
@@ -109,10 +109,12 @@ class Utilizador
 				break;
 
 			case 'DONO':
-				$icon = "fas fa-user-crown";
+				$icon = "fas fa-user-shield";
 				break;
 
 			case 'MOTORISTA':
+				$icon = "fad fa-user-tie";
+				break;
 			case 'MOTORISTAPESADOS':
 				$icon = "fas fa-user-tie";
 				break;
