@@ -187,13 +187,13 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 							$locFinal 		= json_decode($conducao['localizacao_final'], true);
 							$kmsPercorridos = $conducao['kms_finais']-$conducao['kms_iniciais'];
 
-							echo '<tr'.($conducao['ativa'] ? ' class="table-success"' : NULL).' title="Observações: '.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'">';
-							echo '<td class="text-left" nowrap>'.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
+							echo '<tr'.($conducao['ativa'] ? ' class="table-success"' : NULL).'>';
+							echo '<td class="text-left" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'" nowrap>'.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
 							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($conducao["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($conducao["viatura_matricula"]).'</td>';
 							echo '<td class="text-center" nowrap><i class="'.Utilizador::Icon($conducao["funcionario_telemovel"]).'"></i> '.$conducao['motorista'].'</td>';
 							echo '<td class="text-center"><a href="'. (!empty($locInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#') .'">'.date('H:i', strtotime($conducao['data_inicial'])).'</a></td>';
 							echo '<td class="text-center"><a href="'. (!empty($locFinal) ? 'https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/' : '#') .'">'.date('H:i', strtotime($conducao['data_final'])).'</a></td>';
-							echo '<td class="text-right" title="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos	? $conducao['kms_finais'] : "Indefinido").'">'.($kmsPercorridos ? $kmsPercorridos : "Indefinido").'</td>';
+							echo '<td class="text-right" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos	> 0 ? $conducao['kms_finais'] : "Indefinido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos : "Indefinido").'</td>';
 							echo '</tr>';
 						}
 					}
