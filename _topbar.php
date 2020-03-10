@@ -1,5 +1,7 @@
 <?php
 include_once 'includes/common.func.php';
+
+$msgs = $_SESSION['user']->MensagensPorLer();
 ?>				
 				<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
@@ -83,7 +85,7 @@ include_once 'includes/common.func.php';
 						<li class="nav-item dropdown no-arrow mx-1">
 							<a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="fas fa-envelope fa-fw"></i>
-								<span class="badge badge-danger badge-counter"><?= $_SESSION['user']->MensagensPorLer() ?></span>
+								<?= $msgs ? '<span class="badge badge-danger badge-counter">'.$msgs.'</span>' : NULL ?>
 							</a>
 							<!-- Mensagens - Dropdown -->
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
