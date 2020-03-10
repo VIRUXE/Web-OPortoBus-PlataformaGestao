@@ -25,14 +25,20 @@ if(isset($_GET['logout']))
 	header('Location: index.php');
 }
 
-$view = $category = $action = null;
+// Inicializar vars de URL
+$view = $category = $subcategory = $action = null;
 
 if(isset($_GET['ver'])) 
 {
 	$view = $_GET['ver'];
 
 	if(isset($_GET['categoria']))
+	{
 		$category = $_GET['categoria'];
+
+		if(isset($_GET['subcategoria']))
+			$subcategory = $_GET['subcategoria'];
+	}
 
 	if(isset($_GET['accao'])) 
 		$action = $_GET['accao'];
@@ -49,44 +55,75 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 	require '_topbar.php';
 
 	switch ($view) {
-		case 'clientes':
-			require 'includes/views/clientes.php';
-			break;
-		case 'servicos':
-			switch ($action) {
-				case 'adicionar':
-					require 'includes/views/addservico.php';
-					break;
-				default:
-					require 'includes/views/servicos.php';
-					break;
-			}
-			break;
+
 		case 'transporteescolar':
 			switch ($category) 
 			{
 				case 'criancas':
-					require 'includes/views/transporteescolar/criancas.php';
+					switch ($subcategory) 
+					{
+						case 'horarios':
+							require 'includes/views/transporteescolar/horarios.php';
+							break;
+						
+						default:
+							require 'includes/views/transporteescolar/criancas.php';
+							break;
+					}
+					break;
+				case 'rotas':
+					echo 'Rotas';
+					break;
+				default:
+
 					break;
 			}
 			break;
-		case 'frota':
+		case 'empresa':
 			switch ($category) 
 			{
+				case 'clientes':
+					require 'includes/views/empresa/clientes.php';
+					break;
+				case 'servicos':
+					switch ($action) 
+					{
+						case 'adicionar':
+							require 'includes/views/empresa/addservico.php';
+							break;
+						default:
+							require 'includes/views/empresa/servicos.php';
+							break;
+					}
+					break;
+				case 'frota':
+				{
+					switch ($subcategory)
+					{
+						case 'abastecimentos':
+							require 'includes/views/empresa/frota/abastecimentos.php';
+							break;
+						case 'conducao':
+							require 'includes/views/empresa/frota/conducao.php';
+							break;
+						case 'viaturas':
+							require 'includes/views/empresa/frota/viaturas.php';
+							break;
+						default:
+							require 'includes/views/empresa/frota/frota.php';
+							break;
+					}
+					break;
+				}
+				case 'utilizadores':
+					require 'includes/views/empresa/utilizadores.php';
+					break;
 				default:
-					require 'includes/views/frota/viaturas.php';
-					break;
-				case 'abastecimentos':
-					require 'includes/views/frota/abastecimentos.php';
-					break;
-				case 'conducao':
-					require 'includes/views/frota/conducao.php';
+					require 'includes/views/empresa/empresa.php';
 					break;
 			}
 			break;
-		case 'utilizadores':
-			require 'includes/views/utilizadores.php';
-			break;
+		
 		default: // Carrega a vista de resumo, se não tiver escolhido, ou não existir uma página/categoria
 			echo 'Escolha uma opção da barra de navegação...';
 			// require 'includes/views/resumo.php';

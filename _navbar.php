@@ -10,34 +10,42 @@
 					<span>Resumo Geral</span></a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="index.php?ver=frota&categoria=conducao">
+				<a class="nav-link" href="index.php?ver=empresa&categoria=frota&subcategoria=conducao">
 					<i class="fas fa-steering-wheel"></i>
 					<span>Condução</span></a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="index.php?ver=frota&categoria=abastecimentos#adicionarAbastecimento">
+				<a class="nav-link" href="index.php?ver=empresa&categoria=frota&subcategoria=abastecimentos">
 					<i class="fas fa-fw fa-gas-pump"></i>
 					<span>Abastecimento</span></a>
 			</li>
 			<hr class="sidebar-divider">
 			<div class="sidebar-heading">Transporte Escolar</div>
+<?php if($_SESSION['user']->Admin()) { ?>
 			<li class="nav-item">
-				<a class="nav-link" href="index.php?ver=transporteescolar&categoria=criancas">
+				<a class="nav-link collapsed" href="index.php?ver=transporteescolar&categoria=criancas" data-toggle="collapse" data-target="#collapseCriancas">
 					<i class="fas fa-fw fa-child"></i>
 					<span>Crianças</span>
 				</a>
+				<div id="collapseCriancas" class="collapse" aria-labelledby="headingServicos" data-parent="#accordionSidebar">
+					<div class="bg-white py-2 collapse-inner rounded">
+						<a class="collapse-item" href="index.php?ver=transporteescolar&categoria=criancas&subcategoria=horarios"><i class="fas fa-clock"></i> Horários</a>
+						<a class="collapse-item" href="index.php?ver=transporteescolar&categoria=criancas"><i class="fas fa-list-ol"></i> Listagem</a>
+					</div>
+				</div>
 			</li>
+<?php } ?>
 			<li class="nav-item">
-				<a class="nav-link" href="#">
+				<a class="nav-link" href="index.php?ver=transporteescolar&categoria=rotas">
 					<i class="fas fa-fw fa-route"></i>
 					<span>Rotas</span>
 				</a>
 			</li>
-<?php if($_SESSION['user']->cargo == 'DONO' || $_SESSION['user']->cargo == 'DESENVOLVEDOR') { ?>
+<?php if($_SESSION['user']->Admin()) { ?>
 			<hr class="sidebar-divider">
 			<div class="sidebar-heading">Empresa</div>
 			<li class="nav-item">
-				<a class="nav-link" href="index.php?ver=clientes">
+				<a class="nav-link" href="index.php?ver=empresa&categoria=clientes">
 					<i class="fas fa-fw fa-user-tie"></i>
 					<span>Clientes</span>
 				</a>
@@ -49,8 +57,8 @@
 				</a>
 				<div id="collapseServicos" class="collapse" aria-labelledby="headingServicos" data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<a class="collapse-item" href="index.php?ver=servicos&accao=adicionar"><i class="fas fa-plus-circle"></i> Adicionar</a>
-						<a class="collapse-item" href="index.php?ver=servicos"><i class="fas fa-list-ol"></i> Consultar</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=servicos&accao=adicionar"><i class="fas fa-plus-circle"></i> Adicionar</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=servicos"><i class="fas fa-list-ol"></i> Consultar</a>
 					</div>
 				</div>
 			</li>
@@ -62,15 +70,16 @@
 				</a>
 				<div id="collapseFrota" class="collapse" aria-labelledby="headingFrota" data-parent="#accordionSidebar">
 					<div class="bg-white py-2 collapse-inner rounded">
-						<a class="collapse-item" href="index.php?ver=frota"><i class="fas fa-garage-car"></i> Viaturas</a>
-						<a class="collapse-item" href="index.php?ver=frota&categoria=abastecimentos"><i class="fas fa-gas-pump"></i> Abastecimentos</a>
-						<a class="collapse-item" href="index.php?ver=frota&categoria=conducao"><i class="fas fa-steering-wheel"></i> Sessões de Condução</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota"><i class="fas fa-chart-bar"></i> Estatísticas</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=viaturas"><i class="fas fa-garage-car"></i> Viaturas</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=abastecimentos"><i class="fas fa-gas-pump"></i> Abastecimentos</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=conducao"><i class="fas fa-steering-wheel"></i> Sessões de Condução</a>
 					</div>
 				</div>
 			</li>
 
 			<li class="nav-item">
-				<a class="nav-link" href="index.php?ver=utilizadores">
+				<a class="nav-link" href="index.php?ver=empresa&categoria=utilizadores">
 					<i class="fas fa-fw fa-users"></i>
 					<span>Utilizadores</span></a>
 			</li>

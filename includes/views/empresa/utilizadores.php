@@ -50,12 +50,13 @@
 				</div>
 				<div class="card-body">
 					<div class="table-responsive">
-						<table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+						<table id="dataTable" class="table table-sm table-borderless" width="100%" cellspacing="0">
 							<thead>
 								<tr>
 									<th>Telemóvel</th>
 									<th>Primeiro Nome</th>
 									<th>Último Nome</th>
+									<th>Cargo</th>
 								</tr>
 							</thead>
 							<tfoot>
@@ -63,20 +64,27 @@
 									<th>Telemóvel</th>
 									<th>Primeiro Nome</th>
 									<th>Último Nome</th>
+									<th>Cargo</th>
 								</tr>
 							</tfoot>
 							<tbody>
 								<?php
-								$result = $database->query("SELECT telemovel, nome_primeiro, nome_ultimo FROM utilizadores");
+								$result = $database->query("SELECT telemovel, nome_primeiro, nome_ultimo, CONCAT(UCASE(LEFT(cargo, 1)), LCASE(SUBSTRING(cargo, 2))) as cargo FROM utilizadores ORDER BY nome_primeiro");
 
 								if ($result->num_rows) 
 								{
 									while ($user = $result->fetch_assoc()) 
 									{
+										$cargo = $user['cargo'];
+
+										if($cargo == "Motoristapesados")
+											$cargo = "Motorista de Pesados";
+
 										echo '<tr>';
-										echo '<td><a href="index.php?ver=utilizador&telemovel='.$user["telemovel"].'">'. $user["telemovel"] . '</a></td>';
+										echo '<td><a href="index.php?ver=empresa&categoria=utilizadores&utilizador='.$user["telemovel"].'">'. $user["telemovel"] . '</a></td>';
 										echo '<td>' . $user["nome_primeiro"] . '</td>';
 										echo '<td>' . $user["nome_ultimo"] . '</td>';
+										echo '<td><i class="'.Utilizador::Icon($user["telemovel"]).'"></i> '.$cargo.'</td>';
 										echo '</tr>';
 									}
 								}

@@ -48,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 				trigger_error('Query Inválida: ' . $database->error);
 			else
 				echo '
-					<div class="alert alert-danger text-center">
+					<div class="alert alert-success text-center">
 					<i class="fas fa-road"></i> Sessão de condução terminada para a viatura <span class="font-weight-bold">' . Viatura::FormatarMatricula($sessao['viatura']) . '</span>
 					</div>
 				';
@@ -58,10 +58,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		}
 		else
 			echo '
-					<div class="alert alert-danger text-center">
-					<i class="fas fa-road"></i> Não pode fechar com os mesmos KMs com que iniciou a sessão!
-					</div>
-				';
+				<div class="alert alert-danger text-center">
+				<i class="fas fa-road"></i> Não pode fechar com os mesmos KMs com que iniciou a sessão!
+				</div>
+			';
 	}
 	else // Abrir Condução
 	{
@@ -71,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		$_SESSION['user']->conducao = 
 		[
 			'viatura' 		=> $_POST['conducaoViatura'], 
+			'tipo' 			=> $_POST['tipo'], 
 			'kms' 			=> $_POST['viaturaKms'], 
 			'gps' 			=> ['latitude' => $coords[0], 'longitude' => $coords[1]], 
 			'observacoes' 	=> $_POST['conducaoObservacoes']
@@ -79,8 +80,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		$sessao = $_SESSION['user']->conducao; // Só para ser mais fácil...
 
 		$result = $database->query("
-			INSERT INTO viaturas_sessoes (viatura_matricula, funcionario_telemovel, kms_iniciais, localizacao_inicial, obs) 
-			VALUES('{$sessao['viatura']}', '{$_SESSION['user']->telemovel}', '{$sessao['kms']}', '".json_encode($sessao['gps'])."', '{$sessao['observacoes']}')"
+			INSERT INTO viaturas_sessoes (viatura_matricula, tipo, funcionario_telemovel, kms_iniciais, localizacao_inicial, obs) 
+			VALUES('{$sessao['viatura']}', '{$sessao['tipo']}', '{$_SESSION['user']->telemovel}', '{$sessao['kms']}', '".json_encode($sessao['gps'])."', '{$sessao['observacoes']}')"
 		);
 
 		if (!$result)
@@ -102,32 +103,49 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 					<h6 class="m-0 font-weight-bold text-<?= $sessaoAtiva ? "danger":"success" ?>"><?= $sessaoAtiva ? 'Fecho de Condução - <span class="font-weight-bolder">Viatura '.Viatura::FormatarMatricula($_SESSION['user']->conducao['viatura']).'</span>' : 'Início de Condução' ?></h6>
 				</div>
 				<div class="card-body">
-					<form class="form-horizontal" action="index.php?ver=frota&categoria=conducao" method="POST">
+					<form class="form-horizontal" action="index.php?ver=empresa&categoria=frota&subcategoria=conducao" method="POST">
 						<?php
 						if(!$sessaoAtiva)
 						{
-							echo '<div class="form-group row">';
-							echo '<label class="col-md-2" for="conducaoViatura">Viatura</label>';
-							echo '<select id="conducaoViatura" name="conducaoViatura" class="col-md-10 form-control form-control-sm" required>';
-							echo '<option value="" selected>Escolher...</option>';
-							foreach(Frota::Viaturas() as $matricula => $viatura)
-								echo '<option value="'.$matricula.'">'.$viatura["nome"].' '.substr($matricula,2,2).'</option>';
-							echo '</select>';
-							echo '</div>';
+							echo '
+								<div class="row">
+									<div class="form-group col-lg-6">
+										<legend for="conducaoViatura">Viatura</legend>
+										<select id="conducaoViatura" name="conducaoViatura" class="form-control form-control-sm" required>
+											<option value="" selected>Escolher...</option>
+											';
+									foreach(Frota::Viaturas() as $matricula => $viatura)
+										echo '<option value="'.$matricula.'">'.$viatura["nome"].' '.substr($matricula,2,2).'</option>';
+									echo '
+										</select>
+									</div>
+									<div class="form-group col-lg-6">
+										<legend for="tipoConducao">Tipo de Condução</legend>
+										<select id="tipoConducao" name="tipoConducao" class="form-control form-control-sm" required>
+											<option value="OUTRO">Outro</option>
+											<option value="OFICINA">Oficina</option>
+											<option value="ABASTECIMENTO">Abastecimento</option>
+											<option value="SERVICO" selected>Serviço</option>
+										</select>
+									</div>
+								</div>
+								';
 						}
 						?>
-
-						<div class="form-group row">
-							<label for="localizacao" class="col-md-2">Localização</label>					
-							<input type="text" id="localizacao" name="localizacao" class="col-md-10 form-control form-control-sm" onclick="getLocation()" readonly>
+						<div class="row">
+							<div class="form-group col-lg-6">
+								<legend for="localizacao">Localização</legend>					
+								<input type="text" id="localizacao" name="localizacao" class="form-control form-control-sm" onclick="getLocation()" required readonly>
+							</div>
+							<div class="form-group col-lg-6">
+								<legend for="viaturaKms">KMs de <?= $sessaoAtiva ? "Fecho":"Abertura"?></legend>					
+								<input type="number" id="viaturaKms" name="viaturaKms" class="form-control form-control-sm"<?= $sessaoAtiva ? ' value="'.$_SESSION['user']->conducao['kms'].'"' : NULL ?>required>
+							</div>
 						</div>
-						<div class="form-group row">
-							<label for="viaturaKms" class="col-md-2">KMs de <?= $sessaoAtiva ? "Fecho":"Abertura"?></label>					
-							<input type="number" id="viaturaKms" name="viaturaKms" class="col-md-10 form-control form-control-sm"<?= $sessaoAtiva ? ' value="'.$_SESSION['user']->conducao['kms'].'"' : NULL ?>required>
-						</div>
-						<div class="form-group row">
-							<label for="conducaoObservações" class="col-md-2">Observações</label>					
-							<textarea id="conducaoObservacoes" name="conducaoObservacoes" class="col-md-10 form-control form-control-sm" rows="4" maxlength="255" placeholder="Qualquer tipo de observação sobre a viatura ou o serviço em si..."><?= $sessaoAtiva ? $_SESSION['user']->conducao['observacoes'] : NULL ?></textarea>
+						<div class="form-group">
+							<div class="col-lg-6"></div>
+							<legend for="conducaoObservações">Observações</legend>					
+							<textarea id="conducaoObservacoes" name="conducaoObservacoes" class="form-control form-control-sm" rows="4" maxlength="255" placeholder="Qualquer tipo de observação sobre a viatura ou o serviço em si..."><?= $sessaoAtiva ? $_SESSION['user']->conducao['observacoes'] : NULL ?></textarea>
 						</div>
 						<button type="submit" name="formConducao" class="btn btn-<?= $sessaoAtiva ? "danger":"success" ?> btn-icon-split my-1">
 							<span class="icon text-white-50">
@@ -138,14 +156,14 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 					</form>
 				</div>
 			</div>
-<?php if($_SESSION['user']->cargo == 'DONO' || $_SESSION['user']->cargo == 'DESENVOLVEDOR') { ?>			
-			<div class="card shadow mb-4">
+<?php if($_SESSION['user']->Admin()) { ?>			
+<div class="card shadow mb-4">
 	<div class="card-header py-3">
 		<h6 class="m-0 font-weight-bold text-primary">Listagem de Sessões de Condução</h6>
 	</div>
 	<div class="card-body">
 		<div class="table-responsive">
-			<table class="table table-sm table-borderless table-hover" id="dataTable" width="100%" cellspacing="0">
+			<table id="sessoes" class="display table table-sm table-borderless table-hover" width="100%" cellspacing="0">
 				<thead>
 					<tr>
 						<th class="text-left">Dia</th>
@@ -180,13 +198,21 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 						trigger_error('Query Inválida: ' . $database->error);
 					else
 					{
+						$dataHoje = date("d-m");
+
 						while ($conducao = $result->fetch_assoc()) 
 						{
+							$foiHoje = false;
+
+							if(date('d-m', strtotime($conducao['data_inicial'])) == $dataHoje)
+								$foiHoje = true;
+
+
 							$locInicial 	= json_decode($conducao['localizacao_inicial'], true);
 							$locFinal 		= json_decode($conducao['localizacao_final'], true);
 							$kmsPercorridos = $conducao['kms_finais']-$conducao['kms_iniciais'];
 
-							echo '<tr'.($conducao['ativa'] ? ' class="table-success"' : NULL).'>';
+							echo '<tr'.($conducao['ativa'] ? ($foiHoje ? ' class="table-success font-weight-bold"' : ' class="table-success"') : ($foiHoje ? ' class="font-weight-bold"' : NULL)).'>';
 							echo '<td class="text-left" nowrap><i style="color: Tomato;" class="fa'.($conducao['obs'] ? 's' : 'l').' fa-exclamation-circle" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'"></i> '.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
 							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($conducao["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($conducao["viatura_matricula"]).'</td>';
 							echo '<td class="text-center" nowrap><i class="'.Utilizador::Icon($conducao["funcionario_telemovel"]).'"></i> '.$conducao['motorista'].'</td>';
