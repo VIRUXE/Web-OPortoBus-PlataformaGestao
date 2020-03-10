@@ -46,6 +46,14 @@ class Utilizador
 		}
 	}
 
+	public function Admin()
+	{
+		if($this->cargo == "DONO" || $this->cargo == "DESENVOLVEDOR")
+			return true;
+
+		return false;
+	}
+
 	private function HashPIN($pin)
 	{
 		return hash('sha256', $pin);
@@ -107,16 +115,17 @@ class Utilizador
 			case 'DESENVOLVEDOR':
 				$icon = "fas fa-user-secret";
 				break;
-
 			case 'DONO':
 				$icon = "fas fa-user-shield";
 				break;
-
 			case 'MOTORISTA':
 				$icon = "fad fa-user-tie";
 				break;
 			case 'MOTORISTAPESADOS':
 				$icon = "fas fa-user-tie";
+				break;
+			case 'VIGILANTE':
+				$icon = "fas fa-user-nurse";
 				break;
 		}
 
