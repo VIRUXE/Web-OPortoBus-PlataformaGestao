@@ -14,17 +14,32 @@ class Escolas
 				$escolas[] = $escola;
 		}
 
-		// echo '<pre>' . var_dump($escolas) . '</pre>';
-
 		return $escolas;
 	}
 }
 
-class Crianças
+class Criancas
 {
 	public static function Obter()
 	{
+		global $database;
 
+		$criancas = [];
+
+		$result = $database->query("
+			SELECT c.id as id, c.nome_primeiro as nome_primeiro, c.nome_ultimo as nome_ultimo, loc.nome AS escola 
+			FROM escolas_criancas c
+			LEFT JOIN localizacoes loc ON c.escola_id = loc.id
+			ORDER BY escola ASC, c.nome_primeiro ASC
+			");
+
+		if($result && $result->num_rows)
+		{
+			while ($crianca = $result->fetch_assoc())
+				$criancas[] = $crianca;
+		}
+
+		return $criancas;
 	}
 }
 ?>
