@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		$litros 		= $_POST['combustivelLitros'];
 		$precoLitro		= $_POST['combustivelPreco'];
 		$localizacao	= $_POST['localizacao'];
-		$responsavel 	= $_SESSION['utilizador']['telemovel'];
+		$responsavel 	= $_SESSION['user']->telemovel;
 
 		// Validar os dados primeiro
 
@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		// Enviar para a base de dados
 		$result = $database->query("
 			INSERT INTO viaturas_abastecimentos (viatura_matricula, abastecimento_localizacao, viatura_kms, combustivel_tipo, combustivel_litros, combustivel_valor, responsavel_telemovel, criador_telemovel)
-			VALUES('$viatura', '$localizacao', '$kms', '$combustivel', '$litros', '$precoLitro', '$responsavel', '{$_SESSION['utilizador']['telemovel']}')");
+			VALUES('$viatura', '$localizacao', '$kms', '$combustivel', '$litros', '$precoLitro', '$responsavel', '{$_SESSION['user']->telemovel}')");
 
 		if (!$result)
 			trigger_error('Query Inválida: ' . $database->error);
