@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		$_SESSION['user']->conducao = 
 		[
 			'viatura' 		=> $_POST['conducaoViatura'], 
-			'tipo' 			=> $_POST['tipo'], 
+			'tipo' 			=> $_POST['tipoConducao'], 
 			'kms' 			=> $_POST['viaturaKms'], 
 			'gps' 			=> ['latitude' => $coords[0], 'longitude' => $coords[1]], 
 			'observacoes' 	=> $_POST['conducaoObservacoes']
@@ -166,6 +166,7 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 			<table id="sessoes" class="display table table-sm table-borderless table-hover" width="100%" cellspacing="0">
 				<thead>
 					<tr>
+						<th></th>
 						<th class="text-left">Dia</th>
 						<th class="text-center">Viatura</th>
 						<th class="text-center">Funcionário</th>
@@ -176,6 +177,7 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 				</thead>
 				<tfoot>
 					<tr>
+						<th></th>
 						<th class="text-left">Dia</th>
 						<th class="text-center">Viatura</th>
 						<th class="text-center">Funcionário</th>
@@ -186,11 +188,31 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 				</tfoot>
 				<tbody>
 					<?php
+					function ServicoIcon($servico)
+					{
+						$icon = "fas fa-question-circle";
+
+						switch ($servico) 
+						{
+							case 'OFICINA':
+								$icon = "fas fa-tools";
+								break;
+							case 'ABASTECIMENTO':
+								$icon = "fas fa-gas-pump";
+								break;
+							case 'SERVICO':
+								$icon = "fas fa-road";
+								break;
+						}
+
+						return $icon;
+					}
+
 					$result = $database->query("
-									SELECT id, viatura_matricula, v.tipo as viatura_tipo, funcionario_telemovel, CONCAT(u.nome_primeiro, ' ',SUBSTRING(u.nome_ultimo,1,1), '.') as motorista, data_inicial, kms_iniciais, localizacao_inicial, data_final, kms_finais, localizacao_final, obs, ativa 
-									FROM viaturas_sessoes 
-									LEFT JOIN utilizadores u ON viaturas_sessoes.funcionario_telemovel = u.telemovel
-									LEFT JOIN viaturas v ON viaturas_sessoes.viatura_matricula = v.matricula 
+									SELECT id, viatura_matricula, s.tipo, v.tipo as viatura_tipo, funcionario_telemovel, CONCAT(u.nome_primeiro, ' ',SUBSTRING(u.nome_ultimo,1,1), '.') as motorista, data_inicial, kms_iniciais, localizacao_inicial, data_final, kms_finais, localizacao_final, obs, ativa 
+									FROM viaturas_sessoes s
+									LEFT JOIN utilizadores u ON s.funcionario_telemovel = u.telemovel
+									LEFT JOIN viaturas v ON s.viatura_matricula = v.matricula 
 									ORDER BY ativa DESC, data_inicial DESC
 								");
 
@@ -208,17 +230,20 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 								$foiHoje = true;
 
 
-							$locInicial 	= json_decode($conducao['localizacao_inicial'], true);
-							$locFinal 		= json_decode($conducao['localizacao_final'], true);
-							$kmsPercorridos = $conducao['kms_finais']-$conducao['kms_iniciais'];
+							$locInicial 		= json_decode($conducao['localizacao_inicial'], true);
+							$enderecoInicial 	= GEO::ObterEnderecoPorCoords($locInicial['latitude'], $locInicial['longitude']);
+							$locFinal 			= json_decode($conducao['localizacao_final'], true);
+							$enderecoFinal		= GEO::ObterEnderecoPorCoords($locFinal['latitude'], $locFinal['longitude']);
+							$kmsPercorridos 	= $conducao['kms_finais']-$conducao['kms_iniciais'];
 
 							echo '<tr'.($conducao['ativa'] ? ($foiHoje ? ' class="table-success font-weight-bold"' : ' class="table-success"') : ($foiHoje ? ' class="font-weight-bold"' : NULL)).'>';
-							echo '<td class="text-left" nowrap><i style="color: Tomato;" class="fa'.($conducao['obs'] ? 's' : 'l').' fa-exclamation-circle" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'"></i> '.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
+							echo '<td><i style="color: Tomato;" class="fa'.($conducao['obs'] ? 's' : 'l').' fa-exclamation-circle" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'"></i> <i class="'.ServicoIcon($conducao['tipo']).'"></i></td>';
+							echo '<td class="text-left" nowrap>'.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
 							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($conducao["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($conducao["viatura_matricula"]).'</td>';
 							echo '<td class="text-center" nowrap><i class="'.Utilizador::Icon($conducao["funcionario_telemovel"]).'"></i> '.$conducao['motorista'].'</td>';
-							echo '<td class="text-left" nowrap><a href="'. (!empty($locInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#') .'" target="_blank">'.date('H:i', strtotime($conducao['data_inicial'])).' <small>('.GEO::ObterEnderecoPorCoords($locInicial['latitude'], $locInicial['longitude']).')</small></a></td>';
-							echo '<td class="text-left" nowrap><a href="'. (!empty($locFinal) ? 'https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/' : '#') .'" target="_blank">'.date('H:i', strtotime($conducao['data_final'])).' <small>('.(!empty($locFinal) ? GEO::ObterEnderecoPorCoords($locFinal['latitude'], $locFinal['longitude']) : 'Indefinido').')</small></a></td>';
-							echo '<td class="text-right" title="Quilometros" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos	> 0 ? $conducao['kms_finais'] : "Indefinido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos : "Indefinido").'</td>';
+							echo '<td class="text-left" nowrap><a href="'. (!empty($locInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#') .'" target="_blank">'.date('H:i', strtotime($conducao['data_inicial'])).' <small>('.$enderecoInicial['rua'].', '.$enderecoInicial['cidade'].')</small></a></td>';
+							echo '<td class="text-left" nowrap><a href="'. (!empty($locFinal) ? 'https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/' : '#') .'" target="_blank">'.date('H:i', strtotime($conducao['data_final'])).' <small>('.(!empty($locFinal) ? $enderecoFinal['rua'].', '.$enderecoFinal['cidade'] : 'Indefinido').')</small></a></td>';
+							echo '<td class="text-right" title="Quilometros" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos	> 0 ? $conducao['kms_finais'] : "Indefinido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos : NULL).'</td>';
 							echo '</tr>';
 						}
 					}
