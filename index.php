@@ -1,4 +1,6 @@
 <?php
+define('PATH_VIEWS', "includes/views/");
+
 if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off") 
 {
 	$location = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -63,16 +65,16 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 					switch ($subcategory) 
 					{
 						case 'horarios':
-							require 'includes/views/transporteescolar/horarios.php';
+							require PATH_VIEWS.'transporteescolar/horarios.php';
 							break;
 						
 						default:
-							require 'includes/views/transporteescolar/criancas.php';
+							require PATH_VIEWS.'transporteescolar/criancas.php';
 							break;
 					}
 					break;
 				case 'rotas':
-					echo 'Rotas';
+					require PATH_VIEWS.'transporteescolar/rotas.php';
 					break;
 				default:
 
@@ -83,16 +85,16 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 			switch ($category) 
 			{
 				case 'clientes':
-					require 'includes/views/empresa/clientes.php';
+					require PATH_VIEWS.'empresa/clientes.php';
 					break;
 				case 'servicos':
 					switch ($action) 
 					{
 						case 'adicionar':
-							require 'includes/views/empresa/addservico.php';
+							require PATH_VIEWS.'empresa/addservico.php';
 							break;
 						default:
-							require 'includes/views/empresa/servicos.php';
+							require PATH_VIEWS.'empresa/servicos.php';
 							break;
 					}
 					break;
@@ -101,25 +103,25 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 					switch ($subcategory)
 					{
 						case 'abastecimentos':
-							require 'includes/views/empresa/frota/abastecimentos.php';
+							require PATH_VIEWS.'empresa/frota/abastecimentos.php';
 							break;
 						case 'conducao':
-							require 'includes/views/empresa/frota/conducao.php';
+							require PATH_VIEWS.'empresa/frota/conducao.php';
 							break;
 						case 'viaturas':
-							require 'includes/views/empresa/frota/viaturas.php';
+							require PATH_VIEWS.'empresa/frota/viaturas.php';
 							break;
 						default:
-							require 'includes/views/empresa/frota/frota.php';
+							require PATH_VIEWS.'empresa/frota/frota.php';
 							break;
 					}
 					break;
 				}
 				case 'utilizadores':
-					require 'includes/views/empresa/utilizadores.php';
+					require PATH_VIEWS.'empresa/utilizadores.php';
 					break;
 				default:
-					require 'includes/views/empresa/empresa.php';
+					require PATH_VIEWS.'empresa/empresa.php';
 					break;
 			}
 			break;
