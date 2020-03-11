@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	</a>
 	<div class="collapse" id="adicionarAbastecimento">
 		<div class="card-body">
-			<form id="adicionarAbastecimento" class="form-horizontal" action="index.php?ver=frota&categoria=abastecimentos" method="POST">
+			<form id="adicionarAbastecimento" class="form-horizontal" action="index.php?ver=empresa&categoria=frota&subcategoria=abastecimentos" method="POST">
 				<label class="my-1 mr-2" for="viaturaAbastecida">Viatura</label>
 				<select id="viaturaAbastecida" name="viaturaAbastecida" class="form-control" required>
 					<option value="" selected>Escolher...</option>
