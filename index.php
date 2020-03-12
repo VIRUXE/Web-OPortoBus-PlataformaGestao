@@ -8,6 +8,7 @@ if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off")
 	header('Location: ' . $location);
 	exit;
 }
+require 'includes/common.func.php';
 require 'includes/utilizador.class.php';
 
 session_start();
@@ -16,7 +17,7 @@ include_once 'config.php';
 
 $database = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 $database->set_charset("utf8");
-$database->query("SET time_zone='+00:00'");
+$database->query("SET time_zone='".DB_TIMEZONE."'");
 
 if($database->connect_error)
 	die("ERRO FATAL: " . $database->connect_error);

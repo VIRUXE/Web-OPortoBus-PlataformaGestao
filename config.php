@@ -3,6 +3,7 @@ define('DB_SERVER', 'localhost');
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', null);
 define('DB_NAME', 'oportobus_plataforma');
+define('DB_TIMEZONE', '+00:00');
 
 define("GOOGLEMAPS_KEY", "AIzaSyB8nG-N3IoYESncQ4Qjn9UpCoCphDPOeTg");
 
