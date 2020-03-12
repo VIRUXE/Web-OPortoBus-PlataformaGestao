@@ -28,82 +28,83 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 	// Verificar se está a abrir ou fechar condução
 	if(!empty($_SESSION['user']->conducao)) // Fechar Condução
 	{
-		if($_POST['viaturaKms'] != $_SESSION['user']->conducao['kms'])
+		if($_POST['viaturaKms'] > $_SESSION['user']->conducao['kms'])
 		{
-			$coords = explode(',',$_POST['localizacao']); // Separar por latitude e longitude
+			if(strpos($_POST['localizacao'], ",")) // Verificar se foi fornecida posição GPS
+			{
+				$coords = explode(',',$_POST['localizacao']);
+				$coords = json_encode(['latitude' => $coords[0], 'longitude' => $coords[1]]); // Criar um JSON com os dados GPS
 
-			$_SESSION['user']->conducao['kms'] 			= $_POST['viaturaKms'];
-			$_SESSION['user']->conducao['gps'] 			= ['latitude' => $coords[0], 'longitude' => $coords[1]];
-			$_SESSION['user']->conducao['observacoes'] 	= $_POST['conducaoObservacoes'];
+				$_SESSION['user']->conducao['kms'] 			= $_POST['viaturaKms'];
+				$_SESSION['user']->conducao['gps'] 			= $coords;
+				$_SESSION['user']->conducao['observacoes'] 	= $_POST['conducaoObservacoes'];
 
-			$sessao = $_SESSION['user']->conducao; // Só para ser mais fácil...
+				$conducao = $_SESSION['user']->conducao; // Só para ser mais fácil...
+
+				$result = $database->query("
+					UPDATE viaturas_sessoes 
+					SET data_final = current_timestamp(), kms_finais = '{$conducao['kms']}', localizacao_final = NULLIF('{$conducao['gps']}', ''), obs = '{$conducao['observacoes']}', ativa = false
+					WHERE funcionario_telemovel = '{$_SESSION['user']->telemovel}' AND ativa = true"
+				);
+
+				if (!$result)
+					trigger_error('Query Inválida: ' . $database->error);
+				else
+					Alerta('Sessão de condução <span class="font-weight-bold">terminada</span> para a viatura <span class="font-weight-bold">' . Viatura::FormatarMatricula($conducao['viatura']) . '</span>');
+
+				// Destruir a Sessão de Condução
+				$_SESSION['user']->conducao = [];
+			}
+			else
+				Alerta('Tem de ativar o GPS no seu dispositivo antes de poder <span class="font-weight-bold">fechar</span> a sessão!', ALERTA_ERRO, "map-marker-alt");
+		}
+		else
+			Alerta('Não pode fechar com os mesmos ou menos KMs com que iniciou a sessão!', ALERTA_ERRO, $icon = "road");
+	}
+	else // Abrir Condução
+	{
+		if(strpos($_POST['localizacao'], ",")) // Verificar se foi fornecida posição GPS
+		{
+			$coords = explode(',',$_POST['localizacao']);
+			$coords = json_encode(['latitude' => $coords[0], 'longitude' => $coords[1]]); // Criar um JSON com os dados GPS
+
+			// Construir o array com os dados de condução na SESSION
+			$_SESSION['user']->conducao = 
+			[
+				'viatura' 		=> $_POST['conducaoViatura'], 
+				'tipo' 			=> $_POST['tipoConducao'], 
+				'kms' 			=> $_POST['viaturaKms'], 
+				'gps' 			=> $coords, 
+				'observacoes' 	=> $_POST['conducaoObservacoes']
+			];
+
+			$conducao = $_SESSION['user']->conducao; // Só para ser mais fácil...
 
 			$result = $database->query("
-				UPDATE viaturas_sessoes 
-				SET data_final = current_timestamp(), kms_finais = '{$sessao['kms']}', localizacao_final = '".json_encode($sessao['gps'])."', obs = '{$sessao['observacoes']}', ativa = false
-				WHERE funcionario_telemovel = '{$_SESSION['user']->telemovel}' AND ativa = true"
-			);
+				INSERT INTO viaturas_sessoes (viatura_matricula, tipo, funcionario_telemovel, kms_iniciais, localizacao_inicial, obs) 
+				VALUES('{$conducao['viatura']}', '{$conducao['tipo']}', '{$_SESSION['user']->telemovel}', '{$conducao['kms']}', NULLIF('{$conducao['gps']}', ''), '{$conducao['observacoes']}')
+			");
 
 			if (!$result)
 				trigger_error('Query Inválida: ' . $database->error);
 			else
-				echo '
-					<div class="alert alert-success text-center">
-					<i class="fas fa-road"></i> Sessão de condução terminada para a viatura <span class="font-weight-bold">' . Viatura::FormatarMatricula($sessao['viatura']) . '</span>
-					</div>
-				';
-
-			// Destruir a Sessão de Condução
-			$_SESSION['user']->conducao = [];
+				Alerta('Sessão de condução <span class="font-weight-bold">iniciada</span> para a viatura <span class="font-weight-bold">' . Viatura::FormatarMatricula($conducao['viatura']) . '</span>', ALERTA_SUCESSO, "road");
 		}
 		else
-			echo '
-				<div class="alert alert-danger text-center">
-				<i class="fas fa-road"></i> Não pode fechar com os mesmos KMs com que iniciou a sessão!
-				</div>
-			';
-	}
-	else // Abrir Condução
-	{
-		$coords = explode(',',$_POST['localizacao']); // Separar por latitude e longitude
-
-		// Construir o array com os dados de condução na SESSION
-		$_SESSION['user']->conducao = 
-		[
-			'viatura' 		=> $_POST['conducaoViatura'], 
-			'tipo' 			=> $_POST['tipoConducao'], 
-			'kms' 			=> $_POST['viaturaKms'], 
-			'gps' 			=> ['latitude' => $coords[0], 'longitude' => $coords[1]], 
-			'observacoes' 	=> $_POST['conducaoObservacoes']
-		];
-
-		$sessao = $_SESSION['user']->conducao; // Só para ser mais fácil...
-
-		$result = $database->query("
-			INSERT INTO viaturas_sessoes (viatura_matricula, tipo, funcionario_telemovel, kms_iniciais, localizacao_inicial, obs) 
-			VALUES('{$sessao['viatura']}', '{$sessao['tipo']}', '{$_SESSION['user']->telemovel}', '{$sessao['kms']}', '".json_encode($sessao['gps'])."', '{$sessao['observacoes']}')"
-		);
-
-		if (!$result)
-			trigger_error('Query Inválida: ' . $database->error);
-		else
-		{
-			$sessaoID = $database->insert_id;
-			echo '<div class="alert alert-success text-center"><i class="fas fa-road"></i> Sessão de condução iniciada para a viatura <span class="font-weight-bold">' . Viatura::FormatarMatricula($sessao['viatura']) . '</span> com ID '.$sessaoID.'</div>';
-		}
+			Alerta('Tem de ativar o GPS no seu dispositivo antes de poder <span class="font-weight-bold">abrir</span> a sessão!', ALERTA_ERRO, $icon = "map-marker-alt");
 	}
 }
 
 $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 ?>
 			<h1 class="h3 mb-2 text-gray-800">Sessões de Condução</h1>
-			<div class="alert alert-warning"><span class="font-weight-bolder">Atenção:</span> As sessões são para '<i>Iniciar</i>' e '<i>Fechar</i>' <u>sempre</u> que se está ou deixa de <u>trabalhar</u>.</div>
+			<div class="alert alert-warning"><span class="font-weight-bolder">Atenção:</span> As sessões são para '<i>Iniciar</i>' e '<i>Fechar</i>' <u>sempre</u> que se começa ou deixa de <u>conduzir</u>.</div>
 			<div class="card shadow mb-4">
 				<div class="card-header py-3">
 					<h6 class="m-0 font-weight-bold text-<?= $sessaoAtiva ? "danger":"success" ?>"><?= $sessaoAtiva ? 'Fecho de Condução - <span class="font-weight-bolder">Viatura '.Viatura::FormatarMatricula($_SESSION['user']->conducao['viatura']).'</span>' : 'Início de Condução' ?></h6>
 				</div>
 				<div class="card-body">
-					<form class="form-horizontal" action="index.php?ver=empresa&categoria=frota&subcategoria=conducao" method="POST">
+					<form action="index.php?ver=empresa&categoria=frota&subcategoria=conducao" method="POST">
 						<?php
 						if(!$sessaoAtiva)
 						{
@@ -229,21 +230,21 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 							if(date('d-m', strtotime($conducao['data_inicial'])) == $dataHoje)
 								$foiHoje = true;
 
+							$locInicial 		= (!is_null($conducao['localizacao_inicial']) 	? json_decode($conducao['localizacao_inicial'], true) : 							NULL);
+							$enderecoInicial 	= (!is_null($locInicial) 						? GEO::ObterEnderecoPorCoords($locInicial['latitude'], $locInicial['longitude']) : 	NULL);
+							$locFinal 			= (!is_null($conducao['localizacao_final']) 	? json_decode($conducao['localizacao_final'], true) : 								NULL);
+							$enderecoFinal		= (!is_null($locFinal) 							? GEO::ObterEnderecoPorCoords($locFinal['latitude'], $locFinal['longitude']) : 		NULL);
 
-							$locInicial 		= json_decode($conducao['localizacao_inicial'], true);
-							$enderecoInicial 	= GEO::ObterEnderecoPorCoords($locInicial['latitude'], $locInicial['longitude']);
-							$locFinal 			= json_decode($conducao['localizacao_final'], true);
-							$enderecoFinal		= GEO::ObterEnderecoPorCoords($locFinal['latitude'], $locFinal['longitude']);
 							$kmsPercorridos 	= $conducao['kms_finais']-$conducao['kms_iniciais'];
 
 							echo '<tr'.($conducao['ativa'] ? ($foiHoje ? ' class="table-success font-weight-bold"' : ' class="table-success"') : ($foiHoje ? ' class="font-weight-bold"' : NULL)).'>';
-							echo '<td><i style="color: Tomato;" class="fa'.($conducao['obs'] ? 's' : 'l').' fa-exclamation-circle" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'"></i> <i class="'.ServicoIcon($conducao['tipo']).'"></i></td>';
+							echo '<td nowrap><i style="color: Tomato;" class="fa'.($conducao['obs'] ? 's' : 'l').' fa-exclamation-circle" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'"></i> <i class="'.ServicoIcon($conducao['tipo']).'"></i></td>';
 							echo '<td class="text-left" nowrap>'.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
 							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($conducao["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($conducao["viatura_matricula"]).'</td>';
 							echo '<td class="text-center" nowrap><i class="'.Utilizador::Icon($conducao["funcionario_telemovel"]).'"></i> '.$conducao['motorista'].'</td>';
-							echo '<td class="text-left" nowrap><a href="'. (!empty($locInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#') .'" target="_blank">'.date('H:i', strtotime($conducao['data_inicial'])).' <small>('.$enderecoInicial['rua'].', '.$enderecoInicial['cidade'].')</small></a></td>';
-							echo '<td class="text-left" nowrap><a href="'. (!empty($locFinal) ? 'https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/' : '#') .'" target="_blank">'.date('H:i', strtotime($conducao['data_final'])).' <small>('.(!empty($locFinal) ? $enderecoFinal['rua'].', '.$enderecoFinal['cidade'] : 'Indefinido').')</small></a></td>';
-							echo '<td class="text-right" title="Quilometros" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos	> 0 ? $conducao['kms_finais'] : "Indefinido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos : NULL).'</td>';
+							echo '<td class="text-center" nowrap><a href="'.(!is_null($enderecoInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#').'" target="_blank">'.date('H:i', strtotime($conducao['data_inicial'])).'<br/><small class="text-xs">('.(!is_null($enderecoInicial) ? $enderecoInicial['rua'].', '.$enderecoInicial['cidade'] : 'Desconhecido').')</small></a></td>';
+							echo '<td class="text-center" nowrap>'.(!is_null($enderecoFinal) ? '<a href="https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/" target="_blank">'.date('H:i', strtotime($conducao['data_final'])).'<br/><small class="text-xs">('.$enderecoFinal['rua'].', '.$enderecoFinal['cidade'].')</small></a>' : NULL).'</td>';
+							echo '<td class="text-right" title="Quilometros" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos > 0 ? $conducao['kms_finais'] : "Desconhecido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos.' <span class="text-xs">KMs</span>' : NULL).'</td>';
 							echo '</tr>';
 						}
 					}
