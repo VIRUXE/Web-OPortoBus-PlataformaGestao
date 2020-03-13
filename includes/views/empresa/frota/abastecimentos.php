@@ -151,10 +151,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							echo '<tr>';
 							echo '<th class="text-left" title="' . date('d-m-Y H:i', strtotime($abast["abastecimento_data"])) . '" nowrap>' . date('d-m', strtotime($abast["abastecimento_data"])) . '</th>';
 							echo '<td class="text-center" nowrap><i class="' . Viatura::Icon($abast["tipo"]) . '" title="' . $abast["label"] . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abast["viatura_matricula"] . '">' . Viatura::FormatarMatricula($abast["viatura_matricula"]) . '</a></td>';
-							echo '<td class="text-right">' . $kmsTotais . '</td>';
-							echo '<td class="text-center" title="' . $registoAnterior['kms'] . 'KMS em '.date('d-m-Y H:i', strtotime($abast["abastecimento_data"])).'">' . $kmsPercorridos . '</td>';
+							echo '<td class="text-right">' . $kmsTotais . ' <span class="text-xs">KMs</span></td>';
+							echo '<td class="text-center" title="' . $registoAnterior['kms'] . 'KMS em '.date('d-m-Y H:i', strtotime($abast["abastecimento_data"])).'">' . $kmsPercorridos . ' <span class="text-xs">KMs</span></td>';
 							echo '<td class="text-center">' . $abast["combustivel_tipo"] . '</td>';
-							echo '<td class="text-center">' . $abast["combustivel_litros"] . '</td>';
+							echo '<td class="text-center">' . $abast["combustivel_litros"] . 'L</td>';
 							echo '<td class="text-center" title="' . $abast["combustivel_valor"] . '€ ('.$abast["abastecimento_localizacao"].')">' . $custoAbastecimento . '€</td>';
 							echo '<td class="text-right text-' . CorMedia($mediaCons) . '" title="'.$custoKM.'€ por KM">' . $mediaCons . 'L</td>';
 							echo '<td class="text-center text-gray-800" title="Registado por: ' . $abast["criador"] . '" nowrap><i class="' . $_SESSION['user']->Icon($abast["responsavel_telemovel"]) . '"></i> ' . $abast["responsavel"] . '</td>';

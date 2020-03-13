@@ -91,7 +91,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 				Alerta('Sessão de condução <span class="font-weight-bold">iniciada</span> para a viatura <span class="font-weight-bold">' . Viatura::FormatarMatricula($conducao['viatura']) . '</span>', ALERTA_SUCESSO, "road");
 		}
 		else
-			Alerta('Tem de ativar o GPS no seu dispositivo antes de poder <span class="font-weight-bold">abrir</span> a sessão!', ALERTA_ERRO, $icon = "map-marker-alt");
+			Alerta('
+				Tem de ativar o GPS no seu dispositivo antes de poder <span class="font-weight-bold">abrir</span> a sessão!<br>
+				<small class="form-text text-muted">Assim que ativar o GPS carregue na barra da localização para assumir a mesma.</small>', 
+				ALERTA_ERRO, $icon = "map-marker-alt"
+			);
 	}
 }
 
@@ -139,7 +143,7 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 								<input type="text" id="localizacao" name="localizacao" class="form-control form-control-sm" onclick="getLocation()" required readonly>
 							</div>
 							<div class="form-group col-lg-6">
-								<legend for="viaturaKms">KMs de <?= $sessaoAtiva ? "Fecho":"Abertura"?></legend>					
+								<legend for="viaturaKms">KMs <?= $sessaoAtiva ? "Finais":"Iníciais"?></legend>					
 								<input type="number" id="viaturaKms" name="viaturaKms" class="form-control form-control-sm"<?= $sessaoAtiva ? ' value="'.$_SESSION['user']->conducao['kms'].'"' : NULL ?>required>
 							</div>
 						</div>
