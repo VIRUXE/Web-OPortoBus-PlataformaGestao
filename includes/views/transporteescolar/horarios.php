@@ -16,14 +16,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		trigger_error('Query Inválida: ' . $database->error);
 	else
 		echo '<div class="alert alert-success text-center"><i class="fas fa-child"></i> Horário inserido com sucesso</div>';
-}	
+}
+if($_SESSION['user']->Admin()) {	
 ?>
 <form method="POST">
 	<div class="row">
 		<div class="form-group col-lg-2">
 			<legend for="dia" class="">Dia(s)</legend>
 			<select id="dia" name="dia" class="form-control" required>
-				<option value="" selected>Escolher</option>
+				<option value="" selected>Escolher...</option>
 				<option value="SEGUNDA">Segunda-Feira</option>
 				<option value="TERCA">Terça-Feira</option>
 				<option value="QUARTA">Quarta-Feira</option>
@@ -134,6 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 	</button>	
 </form>
 <br>
+<?php } ?>
 <div class="card shadow mb-4">
 	<div class="card-header py-3">
 		<h6 class="m-0 font-weight-bold text-primary">Horários das Crianças</h6>
@@ -143,6 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 			<table id="horariosCriancas" class="table table-sm table-borderless table-hover" width="100%" cellspacing="0">
 				<thead>
 					<tr>
+						<th>ID</th>
 						<th>Dia</th>
 						<th>Hora Recolha</th>
 						<th>Criança</th>
@@ -154,6 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 				</thead>
 				<tfoot>
 					<tr>
+						<th>ID</th>
 						<th>Dia</th>
 						<th>Hora Recolha</th>
 						<th>Criança</th>
@@ -166,7 +170,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 				<tbody>
 					<?php
 					$result = $database->query("
-						SELECT horario.dia, CONCAT(c.nome_primeiro, ' ',c.nome_ultimo) as crianca, recolha.nome as locRecolha, horario.recolha_hora, entrega.nome as locEntrega, horario.entrega_hora, horario.ativo
+						SELECT horario.id, horario.dia, CONCAT(c.nome_primeiro, ' ',c.nome_ultimo) as crianca, recolha.nome as locRecolha, horario.recolha_hora, entrega.nome as locEntrega, horario.entrega_hora, horario.ativo
 						FROM escolas_criancas_horarios horario
 						LEFT JOIN escolas_criancas c ON c.id = horario.crianca_id
 						LEFT JOIN localizacoes recolha ON horario.recolha_localizacao_id = recolha.id
@@ -213,14 +217,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 									break;
 							}
 
-							echo '<tr'.(!$horario['ativo'] ? ' class="text-gray-300"' : NULL).'>';
-							echo '<td>'.$dia.'</td>';
+							echo '<tr'.(!$horario['ativo'] ? ' class="text-gray-400"' : NULL).'>';
+							echo '<td>'.$horario['id'].'</td>';
+							echo '<td nowrap>'.$dia.'</td>';
 							echo '<td class="float-center">'.date('H:i', strtotime($horario['recolha_hora'])).'</td>';
 							echo '<td nowrap>'.$horario['crianca'].'</td>';
 							echo '<td nowrap>'.$horario['locRecolha'].'</td>';
 							echo '<td nowrap>'.$horario['locEntrega'].'</td>';
 							echo '<td class="float-center">'.($horario['entrega_hora'] != "00:00:00" ? date('H:i', strtotime($horario['entrega_hora'])) : NULL).'</td>';
-							echo '
+							if($_SESSION['user']->Admin()) 
+								echo '
 								<td nowrap>
 									<a href="#" class="btn btn-'.(!$horario['ativo'] ? 'success' : 'warning').' btn-circle btn-sm"><i class="fas fa-user-'.(!$horario['ativo'] ? 'check' : 'alt-slash').'"></i></a>
 									<a href="#" class="btn btn-info btn-circle btn-sm"><i class="fas fa-user-edit"></i></a>

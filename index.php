@@ -103,11 +103,20 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 				{
 					switch ($subcategory)
 					{
+						case 'abastecimento':
+							require PATH_VIEWS.'empresa/frota/abastecimento.php';
+							break;
 						case 'abastecimentos':
 							require PATH_VIEWS.'empresa/frota/abastecimentos.php';
 							break;
 						case 'conducao':
 							require PATH_VIEWS.'empresa/frota/conducao.php';
+							break;
+						case 'sessoes':
+							require PATH_VIEWS.'empresa/frota/sessoes.php';
+							break;
+						case 'rotas':
+							require PATH_VIEWS.'empresa/frota/rotas.php';
 							break;
 						case 'viaturas':
 							require PATH_VIEWS.'empresa/frota/viaturas.php';
@@ -126,7 +135,6 @@ if(isset($_SESSION['user'])) // Carregar o dashboard se o user já estiver carre
 					break;
 			}
 			break;
-		
 		default: // Carrega a vista de resumo, se não tiver escolhido, ou não existir uma página/categoria
 			echo 'Escolha uma opção da barra de navegação...';
 			// require 'includes/views/resumo.php';

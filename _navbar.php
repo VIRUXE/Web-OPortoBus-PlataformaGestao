@@ -12,16 +12,15 @@
 			<li class="nav-item">
 				<a class="nav-link" href="index.php?ver=empresa&categoria=frota&subcategoria=conducao">
 					<i class="fas fa-steering-wheel"></i>
-					<span>Condução</span></a>
+					<span>Sessão de Condução</span></a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" href="index.php?ver=empresa&categoria=frota&subcategoria=abastecimentos">
+				<a class="nav-link" href="index.php?ver=empresa&categoria=frota&subcategoria=abastecimento">
 					<i class="fas fa-fw fa-gas-pump"></i>
 					<span>Abastecimento</span></a>
 			</li>
 			<hr class="sidebar-divider">
 			<div class="sidebar-heading">Transporte Escolar</div>
-<?php if($_SESSION['user']->Admin()) { ?>
 			<li class="nav-item">
 				<a class="nav-link collapsed" href="index.php?ver=transporteescolar&categoria=criancas" data-toggle="collapse" data-target="#collapseCriancas">
 					<i class="fas fa-fw fa-child"></i>
@@ -34,11 +33,10 @@
 					</div>
 				</div>
 			</li>
-<?php } ?>
 			<li class="nav-item">
 				<a class="nav-link" href="index.php?ver=transporteescolar&categoria=rotas">
 					<i class="fas fa-fw fa-route"></i>
-					<span>Rotas</span>
+					<span>Rotas Escolares</span>
 				</a>
 			</li>
 <?php if($_SESSION['user']->Admin()) { ?>
@@ -73,7 +71,8 @@
 						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota"><i class="fas fa-chart-bar"></i> Estatísticas</a>
 						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=viaturas"><i class="fas fa-garage-car"></i> Viaturas</a>
 						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=abastecimentos"><i class="fas fa-gas-pump"></i> Abastecimentos</a>
-						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=conducao"><i class="fas fa-steering-wheel"></i> Sessões de Condução</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=sessoes"><i class="fas fa-steering-wheel"></i> Sessões de Condução</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=rotas"><i class="fas fa-route"></i> Rotas</a>
 					</div>
 				</div>
 			</li>
