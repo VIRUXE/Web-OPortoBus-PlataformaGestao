@@ -72,7 +72,7 @@
 						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=viaturas"><i class="fas fa-garage-car"></i> Viaturas</a>
 						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=abastecimentos"><i class="fas fa-gas-pump"></i> Abastecimentos</a>
 						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=sessoes"><i class="fas fa-steering-wheel"></i> Sessões de Condução</a>
-						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=rotas"><i class="fas fa-route"></i> Rotas</a>
+						<a class="collapse-item" href="index.php?ver=empresa&categoria=frota&subcategoria=rotas"><i class="fas fa-route"></i> Definir Rotas Escolares</a>
 					</div>
 				</div>
 			</li>

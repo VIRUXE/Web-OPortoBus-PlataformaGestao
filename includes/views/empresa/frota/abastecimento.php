@@ -25,7 +25,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		if (!$result)
 			trigger_error('Query Inválida: ' . $database->error);
 		else
+		{
+			Utilizador::Alerta("{$_SESSION['user']->NomeFormatado()} acabou de abastecer a viatura $viatura", 930488244);
+			Utilizador::Alerta("{$_SESSION['user']->NomeFormatado()} acabou de abastecer a viatura $viatura", 930488076);
 			Alerta('Abastecimento para a viatura <span class="font-weight-bold">' . Viatura::FormatarMatricula($viatura) . '</span> inserido com sucesso.', ALERTA_SUCESSO, "gas-pump");
+		}
 	}
 }
 ?>

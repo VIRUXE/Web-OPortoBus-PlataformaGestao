@@ -132,29 +132,32 @@ class Utilizador
 		return $icon;
 	}
 
-	public function ObterMensagens($quantidade)
+	public function ObterMensagens($quantidade = NULL)
 	{
 		global $database;
 
 		$mensagens = [];
 
 		$result = $database->query("
-			SELECT id, data, de.nome_primeiro as nome_primeiro, de.nome_ultimo as nome_ultimo, titulo, lida 
-			FROM utilizadores_mensagens 
-			LEFT JOIN utilizadores de ON utilizadores_mensagens.de_telemovel = de.telemovel
-			WHERE para_telemovel = '$this->telemovel' 
-			LIMIT $quantidade");
+			SELECT msg.id, msg.data, de.nome_primeiro as nome_primeiro, de.nome_ultimo as nome_ultimo, msg.titulo, msg.lida 
+			FROM utilizadores_mensagens msg
+			LEFT JOIN utilizadores de ON msg.de_telemovel = de.telemovel
+			WHERE msg.para_telemovel = '$this->telemovel'
+			ORDER BY msg.data DESC
+		");
 
 		if($result && $result->num_rows)
 		{
 			while ($mensagem = $result->fetch_assoc())
 				$mensagens[] = $mensagem;
 		}
+
+		// var_dump($mensagens);
 		
 		return $mensagens;
 	}
 
-	public function MensagensPorLer()
+/*	public function MensagensPorLer()
 	{
 		global $database;
 
@@ -166,5 +169,35 @@ class Utilizador
 			$count = $result->fetch_assoc()['count'];
 
 		return $count;
+	}*/
+
+	public static function Alerta($descricao, $utilizadorTelemovel = NULL)
+	{
+		global $database;
+
+		if(is_null($utilizadorTelemovel))
+			$utilizadorTelemovel = $this->telemovel;
+
+		$result = $database->query("INSERT INTO `utilizadores_alertas` (`utilizador_telemovel`, `descricao`, `link`) VALUES ('$utilizadorTelemovel', '$descricao', '#')");
+
+		if($result)
+			var_dump($result);
+	}
+
+	public function ObterAlertas($quantidade = NULL)
+	{
+		global $database;
+
+		$alertas = [];
+
+		$result = $database->query("SELECT id, tipo, data, descricao, link, lido FROM utilizadores_alertas WHERE utilizador_telemovel = '$this->telemovel' ORDER BY data DESC");
+
+		if($result && $result->num_rows)
+		{
+			while ($alerta = $result->fetch_assoc()) 
+				$alertas[] = $alerta;
+		}
+
+		return $alertas;
 	}
 }
