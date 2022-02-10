@@ -17,5 +17,6 @@ This was created at the time as a *Proof of Concept* for a Portuguese transport/
 - CSS
   - Bootstrap
 - Javascript
+  - JQuery
 - PHP
 - MySQL
