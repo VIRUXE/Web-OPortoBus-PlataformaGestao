@@ -2,6 +2,8 @@
 require 'includes/frota/frota.class.php';
 require 'includes/geo.class.php';
 
+define("TODAY", date("d-m"));
+
 // Carregar a sessão activa se existir
 $result = $database->query("SELECT viatura_matricula, kms_iniciais, obs FROM viaturas_sessoes WHERE funcionario_telemovel = '{$_SESSION['user']->telemovel}' AND ativa = true");
 
@@ -182,10 +184,6 @@ $sessaoAtiva = isset($_SESSION['user']->session['viatura']) ? true : false;
 				</tfoot>
 				<tbody>
 					<?php
-					function FormatLocationURL($location) {
-						return sprintf('https://www.google.com/maps/search/%s,%s/', $location["latitude"], $location['longitude']);
-					}
-
 					// This function will only be used in this page. No need to place it anywhere else
 					function ServicoIcon($servico)
 					{
@@ -221,15 +219,13 @@ $sessaoAtiva = isset($_SESSION['user']->session['viatura']) ? true : false;
 						trigger_error('Query Inválida: ' . $database->error);
 					else
 					{
-						$dataHoje = date("d-m");
-
 						while ($session = $result->fetch_assoc()) 
 						{
 							$foiHoje = false;
 							$location = [];
 							$address = [];
 
-							if(date('d-m', strtotime($session['data_inicial'])) == $dataHoje)
+							if(date('d-m', strtotime($session['data_inicial'])) == TODAY)
 								$foiHoje = true;
 
 							if(!is_null($session['localizacao_inicial']) && !is_null($session['localizacao_final'])) {
@@ -248,7 +244,7 @@ $sessaoAtiva = isset($_SESSION['user']->session['viatura']) ? true : false;
 							// Date
 							echo '<td class="text-left" nowrap>'.date('d-m', strtotime($session['data_inicial'])).'</td>';
 							// Type of Vehicle
-							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($session["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($session["viatura_matricula"]).'</td>';
+							echo '<td class="text-center" nowrap><i class="'.Viatura::Icon($session["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($session["viatura_matricula"]).'</td>';
 							// Start Location
 							echo '<td class="text-center" nowrap><a href="' . ($location["start"] ? FormatLocationURL($location["start"]) : '#') . '" target="_blank">'.date('H:i', strtotime($session['data_inicial'])).'<br/><small class="text-xs">(' . GEO::ObterEnderecoPorCoords($location["start"]) . ')</small></a></td>';
 							// Finish Location
