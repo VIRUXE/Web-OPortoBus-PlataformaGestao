@@ -32,4 +32,8 @@ function Alerta($mensagem, $tipoAlerta = ALERTA_SUCESSO, $icon = 'exclamation-ci
 {
 	echo '<div class="alert alert-'.$tipoAlerta.' text-'.$alinhamento.'"><i class="fa'.$iconStyle.' fa-'.$icon.'"></i> '.$mensagem.'</div>';
 }
+
+function FormatLocationURL($location) {
+	return sprintf('https://www.google.com/maps/search/%s,%s/', $location["latitude"], $location['longitude']);
+}
 ?>	
