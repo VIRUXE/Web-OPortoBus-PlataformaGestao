@@ -1,13 +1,13 @@
 <?php
 define('PATH_VIEWS', "includes/views/");
 
-if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off") 
+/* if (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === "off") 
 {
 	$location = 'https://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	header('HTTP/1.1 301 Moved Permanently');
 	header('Location: ' . $location);
 	exit;
-}
+} */
 require 'includes/common.func.php';
 require 'includes/utilizador.class.php';
 
