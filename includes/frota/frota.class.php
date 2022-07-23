@@ -4,7 +4,7 @@ require_once 'config.php';
 class Frota
 {
 
-	function Viaturas()
+	static function Viaturas()
 	{
 		global $database;
 		$viaturas = [];
