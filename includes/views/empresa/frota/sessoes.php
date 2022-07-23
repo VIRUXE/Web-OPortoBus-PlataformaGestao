@@ -54,11 +54,11 @@ require_once 'includes/geo.class.php';
 					}
 
 					$result = $database->query("
-						SELECT id, viatura_matricula, s.tipo, v.tipo as viatura_tipo, funcionario_telemovel, CONCAT(u.nome_primeiro, ' ',SUBSTRING(u.nome_ultimo,1,1), '.') as motorista, data_inicial, kms_iniciais, localizacao_inicial, data_final, kms_finais, localizacao_final, obs, ativa 
+						SELECT s.id, s.viatura_matricula, s.tipo, v.tipo as viatura_tipo, s.funcionario_telemovel, CONCAT(u.nome_primeiro, ' ',SUBSTRING(u.nome_ultimo,1,1), '.') as motorista, s.data_inicial, s.kms_iniciais, s.localizacao_inicial, s.data_final, s.kms_finais, s.localizacao_final, s.obs, s.ativa 
 						FROM viaturas_sessoes s
 						LEFT JOIN utilizadores u ON s.funcionario_telemovel = u.telemovel
 						LEFT JOIN viaturas v ON s.viatura_matricula = v.matricula 
-						ORDER BY ativa DESC, data_inicial DESC
+						ORDER BY s.ativa DESC, s.data_inicial DESC
 						LIMIT 30
 					");
 

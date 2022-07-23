@@ -203,12 +203,12 @@ $sessaoAtiva = isset($_SESSION['user']->conducao['viatura']) ? true : false;
 					}
 
 					$result = $database->query("
-						SELECT id, viatura_matricula, s.tipo, v.tipo as viatura_tipo, funcionario_telemovel, data_inicial, kms_iniciais, localizacao_inicial, data_final, kms_finais, localizacao_final, obs, ativa 
+						SELECT s.id, s.viatura_matricula, s.tipo, v.tipo as viatura_tipo, s.funcionario_telemovel, s.data_inicial, s.kms_iniciais, s.localizacao_inicial, s.data_final, s.kms_finais, s.localizacao_final, s.obs, s.ativa 
 						FROM viaturas_sessoes s
 						LEFT JOIN utilizadores u ON s.funcionario_telemovel = u.telemovel
 						LEFT JOIN viaturas v ON s.viatura_matricula = v.matricula 
 						WHERE s.funcionario_telemovel = '{$_SESSION['user']->telemovel}'
-						ORDER BY ativa DESC, data_inicial DESC
+						ORDER BY s.ativa DESC, s.data_inicial DESC
 						LIMIT 15
 					");
 
