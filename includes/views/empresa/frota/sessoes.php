@@ -1,6 +1,8 @@
 <?php
 require_once 'includes/frota/frota.class.php';
 require_once 'includes/geo.class.php';
+
+define("TODAY", date("d-m"));
 ?>
 <div class="card shadow mb-4">
 	<div class="card-header py-3">
@@ -66,30 +68,39 @@ require_once 'includes/geo.class.php';
 						trigger_error('Query Inválida: ' . $database->error);
 					else
 					{
-						$dataHoje = date("d-m");
-
-						while ($conducao = $result->fetch_assoc()) 
+						while ($session = $result->fetch_assoc()) 
 						{
 							$foiHoje = false;
+							$location = [];
+							$address = [];
 
-							if(date('d-m', strtotime($conducao['data_inicial'])) == $dataHoje)
+							if(date('d-m', strtotime($session['data_inicial'])) == TODAY)
 								$foiHoje = true;
 
-							$locInicial 		= (!is_null($conducao['localizacao_inicial']) 	? json_decode($conducao['localizacao_inicial'], true) : 							NULL);
-							$enderecoInicial 	= (!is_null($locInicial) 						? GEO::ObterEnderecoPorCoords($locInicial['latitude'], $locInicial['longitude']) : 	NULL);
-							$locFinal 			= (!is_null($conducao['localizacao_final']) 	? json_decode($conducao['localizacao_final'], true) : 								NULL);
-							$enderecoFinal		= (!is_null($locFinal) 							? GEO::ObterEnderecoPorCoords($locFinal['latitude'], $locFinal['longitude']) : 		NULL);
+							if(!is_null($session['localizacao_inicial']) && !is_null($session['localizacao_final'])) {
+								$location["start"] 	= json_decode($session['localizacao_inicial'], true);
+								$location["finish"] = json_decode($session['localizacao_final'], true);
+							}
+							
+							// Get addresses from coordinatess
 
-							$kmsPercorridos 	= $conducao['kms_finais']-$conducao['kms_iniciais'];
+							$kmsPercorridos = $session['kms_finais']-$session['kms_iniciais'];
 
-							echo '<tr'.($conducao['ativa'] ? ($foiHoje ? ' class="table-success font-weight-bold"' : ' class="table-success"') : ($foiHoje ? ' class="font-weight-bold"' : NULL)).'>';
-							echo '<td nowrap><i style="color: Tomato;" class="fa'.($conducao['obs'] ? 's' : 'l').' fa-exclamation-circle" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($conducao['obs'] ? $conducao['obs'] : "Sem observações...").'"></i> <i class="'.ServicoIcon($conducao['tipo']).'"></i></td>';
-							echo '<td class="text-left" nowrap>'.date('d-m', strtotime($conducao['data_inicial'])).'</td>';
-							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($conducao["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($conducao["viatura_matricula"]).'</td>';
-							echo '<td class="text-center" nowrap><i class="'.Utilizador::Icon($conducao["funcionario_telemovel"]).'"></i> '.$conducao['motorista'].'</td>';
-							echo '<td class="text-center" nowrap><a href="'.(!is_null($enderecoInicial) ? 'https://www.google.com/maps/search/'.$locInicial['latitude'].','.$locInicial['longitude'].'/' : '#').'" target="_blank">'.date('H:i', strtotime($conducao['data_inicial'])).'<br/><small class="text-xs">('.(!is_null($enderecoInicial) ? $enderecoInicial['rua'].', '.$enderecoInicial['cidade'] : 'Desconhecido').')</small></a></td>';
-							echo '<td class="text-center" nowrap>'.(!is_null($enderecoFinal) ? '<a href="https://www.google.com/maps/search/'.$locFinal['latitude'].','.$locFinal['longitude'].'/" target="_blank">'.date('H:i', strtotime($conducao['data_final'])).'<br/><small class="text-xs">('.$enderecoFinal['rua'].', '.$enderecoFinal['cidade'].')</small></a>' : 'Desconhecido').'</td>';
-							echo '<td class="text-right" title="Quilometros" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$conducao['kms_iniciais'].' Finais: '.($kmsPercorridos > 0 ? $conducao['kms_finais'] : "Desconhecido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos.' <span class="text-xs">KMs</span>' : 'Desconhecido').'</td>';
+							// Driving Session State
+							echo '<tr'.($session['ativa'] ? ($foiHoje ? ' class="table-success font-weight-bold"' : ' class="table-success"') : ($foiHoje ? ' class="font-weight-bold"' : NULL)).'>';
+							// Observations and Session Type
+							echo '<td nowrap><i style="color: Tomato;" class="fa'.($session['obs'] ? 's' : 'l').' fa-exclamation-circle" title="Observações:" data-toggle="popover" data-placement="top" data-content="'.($session['obs'] ? $session['obs'] : "Sem observações...").'"></i> <i class="'.ServicoIcon($session['tipo']).'"></i></td>';
+							// Date
+							echo '<td class="text-left" nowrap>'.date('d-m', strtotime($session['data_inicial'])).'</td>';
+							// Type of Vehicle
+							echo '<td class="text-center" nowrap>'.'<i class="'.Viatura::Icon($session["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($session["viatura_matricula"]).'</td>';
+							echo '<td class="text-center" nowrap><i class="'.Utilizador::Icon($session["funcionario_telemovel"]).'"></i> '.$session['motorista'].'</td>';
+							// Start Location
+							echo '<td class="text-center" nowrap><a href="' . ($location["start"] ? FormatLocationURL($location["start"]) : '#') . '" target="_blank">'.date('H:i', strtotime($session['data_inicial'])).'<br/><small class="text-xs">(' . GEO::ObterEnderecoPorCoords($location["start"]) . ')</small></a></td>';
+							// Finish Location
+							echo '<td class="text-center" nowrap><a href="' . ($location["finish"] ? FormatLocationURL($location["finish"]) : '#') . '" target="_blank">'.date('H:i', strtotime($session['data_final'])).'<br/><small class="text-xs">(' . GEO::ObterEnderecoPorCoords($location["finish"]) . ')</small></a></td>';
+							// Distance Traveled
+							echo '<td class="text-right" title="Quilometros" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$session['kms_iniciais'].' Finais: '.($kmsPercorridos > 0 ? $session['kms_finais'] : "Desconhecido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos.' <span class="text-xs">KMs</span>' : NULL).'</td>';
 							echo '</tr>';
 						}
 					}
