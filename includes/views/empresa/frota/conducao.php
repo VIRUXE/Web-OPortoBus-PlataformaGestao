@@ -110,7 +110,7 @@ $sessaoAtiva = isset($_SESSION['user']->session['viatura']) ? true : false;
 		<h6 class="m-0 font-weight-bold text-<?= $sessaoAtiva ? "danger":"success" ?>"><?= $sessaoAtiva ? 'Fecho de Condução - <span class="font-weight-bolder">Viatura '.Viatura::FormatarMatricula($_SESSION['user']->session['viatura']).'</span>' : 'Início de Condução' ?></h6>
 	</div>
 	<div class="card-body">
-		<form action="index.php?ver=empresa&categoria=frota&subcategoria=session" method="POST">
+		<form action="index.php?ver=empresa&categoria=frota&subcategoria=conducao" method="POST">
 			<?php if(!$sessaoAtiva)	{ ?>
 			<div class="form-row">
 				<div class="form-group col-md-auto">
@@ -246,9 +246,9 @@ $sessaoAtiva = isset($_SESSION['user']->session['viatura']) ? true : false;
 							// Type of Vehicle
 							echo '<td class="text-center" nowrap><i class="'.Viatura::Icon($session["viatura_tipo"]).'"></i> '.Viatura::FormatarMatricula($session["viatura_matricula"]).'</td>';
 							// Start Location
-							echo '<td class="text-center" nowrap><a href="' . ($location["start"] ? FormatLocationURL($location["start"]) : '#') . '" target="_blank">'.date('H:i', strtotime($session['data_inicial'])).'<br/><small class="text-xs">(' . GEO::ObterEnderecoPorCoords($location["start"]) . ')</small></a></td>';
+							echo '<td class="text-center" nowrap><a href="' . @($location["start"] ? FormatLocationURL($location["start"]) : '#') . '" target="_blank">'.date('H:i', strtotime($session['data_inicial'])).'<br/><small class="text-xs">(' . @GEO::ObterEnderecoPorCoords($location["start"]) . ')</small></a></td>';
 							// Finish Location
-							echo '<td class="text-center" nowrap><a href="' . ($location["finish"] ? FormatLocationURL($location["finish"]) : '#') . '" target="_blank">'.date('H:i', strtotime($session['data_final'])).'<br/><small class="text-xs">(' . GEO::ObterEnderecoPorCoords($location["finish"]) . ')</small></a></td>';
+							echo '<td class="text-center" nowrap><a href="' . @($location["finish"] ? FormatLocationURL($location["finish"]) : '#') . '" target="_blank">'.date('H:i', strtotime($session['data_final'])).'<br/><small class="text-xs">(' . @GEO::ObterEnderecoPorCoords($location["finish"]) . ')</small></a></td>';
 							// Distance Traveled
 							echo '<td class="text-right" title="Quilometros" data-toggle="popover" data-placement="top" data-content="Iniciais: '.$session['kms_iniciais'].' Finais: '.($kmsPercorridos > 0 ? $session['kms_finais'] : "Desconhecido").'">'.($kmsPercorridos > 0 ? $kmsPercorridos.' <span class="text-xs">KMs</span>' : NULL).'</td>';
 							echo '</tr>';
