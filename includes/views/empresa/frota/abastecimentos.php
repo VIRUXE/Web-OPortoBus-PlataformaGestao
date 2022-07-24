@@ -47,7 +47,7 @@ function CorCombustivel($tipo)
 						<th class="text-left">Data</th>
 						<th class="text-center">Viatura</th>
 						<th class="text-right">Odómetro</th>
-						<th class="text-center">KMs</th>
+						<th class="text-center">KMs Percorridos</th>
 						<th class="text-center">Combustível</th>
 						<th class="text-center">Litros</th>
 						<th class="text-center">Custo</th>
@@ -60,7 +60,7 @@ function CorCombustivel($tipo)
 						<th class="text-left">Data</th>
 						<th class="text-center">Viatura</th>
 						<th class="text-right">Odómetro</th>
-						<th class="text-center">KMs</th>
+						<th class="text-center">KMs Percorridos</th>
 						<th class="text-center">Combustível</th>
 						<th class="text-center">Litros</th>
 						<th class="text-center">Custo</th>
@@ -87,10 +87,10 @@ function CorCombustivel($tipo)
 						{
 							$registoAnterior = Viatura::RegistoAnterior($abastecimento["viatura_matricula"], $abastecimento["combustivel_tipo"], $abastecimento["abastecimento_data"]);
 
-							echo var_dump($registoAnterior);
+							// echo var_dump($registoAnterior);
 
 							$kmsTotais          = $abastecimento["viatura_kms"];
-							$kmsPercorridos     = $registoAnterior['kms'] ? $kmsTotais - $registoAnterior['kms'] : 0;
+							$kmsPercorridos     = $registoAnterior ? $kmsTotais - $registoAnterior['kms'] : NULL;
 							$mediaCons          = $kmsPercorridos ? round(100 / ($kmsPercorridos / $abastecimento["combustivel_litros"]), 2) : "0.0";
 							$custoAbastecimento = round($abastecimento["combustivel_valor"] * $abastecimento["combustivel_litros"], 2, PHP_ROUND_HALF_EVEN);
 							$custoKM            = $kmsPercorridos ? round($abastecimento["combustivel_litros"] / $kmsPercorridos, 2) : 0;
@@ -100,10 +100,11 @@ function CorCombustivel($tipo)
 							echo '<th class="text-left" title="' . date('d-m-Y H:i', strtotime($abastecimento["abastecimento_data"])) . '" nowrap>' . date('d-m', strtotime($abastecimento["abastecimento_data"])) . '</th>';
 							// Vehicle
 							echo '<td class="text-center" nowrap><i class="' . Viatura::Icon($abastecimento["tipo"]) . '" title="' . $abastecimento["label"] . '"></i> <a href="index.php?ver=frota&categoria=abastecimentos&viatura=' . $abastecimento["viatura_matricula"] . '">' . Viatura::FormatarMatricula($abastecimento["viatura_matricula"]) . '</a></td>';
-							// Total Mileage
+							// Odometer reading at time of fueling
 							echo '<td class="text-right" nowrap>' . $kmsTotais . ' <span class="text-xs">KMs</span></td>';
 							// Last top-up
-							echo '<td class="text-center" title="' . $registoAnterior['kms'] . 'KMS em '.date('d-m-Y H:i', strtotime($abastecimento["abastecimento_data"])).'" nowrap>' . $kmsPercorridos . ' <span class="text-xs">KMs</span></td>';
+							$lastFuelTooltip = $registoAnterior ? sprintf("%s Kms desde %s", $registoAnterior['kms'], date('d-m-Y H:i', strtotime($abastecimento["abastecimento_data"]))) : "Este foi o primeiro registo.";
+							echo '<td class="text-center" title="'.$lastFuelTooltip.'" nowrap>' . ($kmsPercorridos ? $kmsPercorridos : 0) . ' <span class="text-xs">KMs</span></td>';
 							// Fuel Type
 							echo '<td class="text-center"><i style="color:'.CorCombustivel(strtoupper($abastecimento["combustivel_tipo"])).'" class="fas fa-gas-pump"></i> '.$abastecimento["combustivel_tipo"].'</td>';
 							// Amount of Liters
