@@ -27,11 +27,10 @@ class Frota
 
 class Viatura
 {
+	/* Vehicles can be bi-fuel so yes we're passing the fuel type */
 	static function RegistoAnterior($matricula, $combustivelTipo, $dataInicial = NULL)
 	{
 		global $database;
-
-		$registo = ['kms' => '0', 'litros' => '0'];
 
 		if(is_null($dataInicial))
 			$dataInicial =  date("Y-m-d");
@@ -39,25 +38,25 @@ class Viatura
 		$result = $database->query("
 								SELECT viatura_kms as kms, combustivel_litros as litros FROM viaturas_abastecimentos 
 								WHERE viatura_matricula = '{$matricula}' AND combustivel_tipo = '{$combustivelTipo}' AND abastecimento_data < '{$dataInicial}' 
-								ORDER BY abastecimento_data DESC
+								ORDER BY abastecimento_data DESC;
 							");
 
 		if($result && $result->num_rows)
-			$registo = $result->fetch_assoc();
+			return $result->fetch_assoc();
 
-		return $registo;
+		return NULL;
 	}
 
-	static function FormatarMatricula($data)
+	static function FormatarMatricula($matricula)
 	{
-		$matricula = null;
+		$formattedString = null;
 
-		if (strlen($data) == 6) {
-			$matricula = substr_replace($data, '-', 2, 0);
-			$matricula = substr_replace($matricula, '-', 5, 0);
+		if (strlen($matricula) == 6) {
+			$formattedString = substr_replace($matricula, '-', 2, 0);
+			$formattedString = substr_replace($formattedString, '-', 5, 0);
 		}
 
-		return $matricula;
+		return $formattedString;
 	}
 
 	static function Icon($tipoViatura)
