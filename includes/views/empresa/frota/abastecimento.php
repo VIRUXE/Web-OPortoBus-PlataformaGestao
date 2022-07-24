@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 					<div class="col-lg-2">
 							<label for="combustivelTipo">Combustível</label>
 							<select name="combustivelTipo" class="form-control" required>
-								<option value="GASOLEO"> Gasóleo</option>
+								<option value="DIESEL"> Diesel</option>
 								<option value="GASOLINA"> Gasolina</option>
 								<option value="ELETRICO"> Elétrico</option>
 								<option value="GPL"> GPL</option>
