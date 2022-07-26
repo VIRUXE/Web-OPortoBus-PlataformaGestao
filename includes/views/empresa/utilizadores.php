@@ -7,7 +7,7 @@
 				</a>
 				<div class="collapse" id="adicionarUtilizador">
 					<div class="card-body"><!-- telemovel, nivel, primeiro nome, ultimo nome, morada, nib, nif, mail, cargo, activo-->
-						<form id="adicionarUtilizador" class="form-horizontal" action="index.php?pagina=viaturas&categoria=abastecimentos" method="POST">
+						<form id="adicionarUtilizador" class="form-horizontal" action="index.php?pagina=viaturas&categoria=utilizadores" method="POST">
 							<label for="telemovel">Telemóvel</label>
 							<input type="tel" name="telemovel" class="form-control" pattern="[9]{1}[1-6]{1}[0-9]{7}" maxlength="9" required>
 							<label for="nomePrimeiro">Primeiro Nome</label>
@@ -21,7 +21,7 @@
 							<label for="nib">NIB</label>
 							<input type="number" name="nib" class="form-control" pattern="[9]{1}[1-6]{1}[0-9]{7}" maxlength="9" required>
 							<label for="email">E-Mail</label>
-							<input type="email" name="email" class="form-control" pattern="[9]{1}[1-6]{1}[0-9]{7}" maxlength="9" required>
+							<input type="email" name="email" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" required>
 
 							<label class="my-1 mr-2" for="cargoUser">Cargo</label>
 							<select id="cargoUser" class="form-control">
