@@ -19,7 +19,7 @@ else
 ?>
 			<h1 class="h3 mb-4 text-gray-800">Clientes</h1>
 
-			<form id="login" action="index.php?pagina=servicos&accao=adicionar" method="post" class="user">
+			<form id="login" action="index.php?ver=empresa&categoria=servicos&accao=adicionar" method="post" class="user">
 				<div class="form-group row">
 					<div class="col-sm-12 mb-3 mb-sm-0">
 						<label for="nomeCliente">Nome do Cliente:</label>
