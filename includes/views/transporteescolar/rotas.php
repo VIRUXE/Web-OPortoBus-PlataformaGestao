@@ -93,8 +93,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 					{
 						while ($horario = $result->fetch_assoc()) 
 						{
-							$dia = $horario['dia'];
-
 							echo '<tr>';
 							echo '<td class="float-center">'.date('H:i', strtotime($horario['recolha_hora'])).'</td>';
 							echo '<td nowrap>'.$horario['crianca'].'</td>';
