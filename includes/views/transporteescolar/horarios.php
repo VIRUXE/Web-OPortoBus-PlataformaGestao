@@ -145,7 +145,7 @@ if($_SESSION['user']->Admin()) {
 			<table id="horariosCriancas" class="table table-sm table-borderless table-hover" width="100%" cellspacing="0">
 				<thead>
 					<tr>
-						<th>ID</th>
+						<!-- <th>ID</th> -->
 						<th>Dia</th>
 						<th>Hora Recolha</th>
 						<th>Criança</th>
@@ -157,7 +157,7 @@ if($_SESSION['user']->Admin()) {
 				</thead>
 				<tfoot>
 					<tr>
-						<th>ID</th>
+						<!-- <th>ID</th> -->
 						<th>Dia</th>
 						<th>Hora Recolha</th>
 						<th>Criança</th>
@@ -218,7 +218,7 @@ if($_SESSION['user']->Admin()) {
 							}
 
 							echo '<tr'.(!$horario['ativo'] ? ' class="text-gray-400"' : NULL).'>';
-							echo '<td>'.$horario['id'].'</td>';
+							// echo '<td>'.$horario['id'].'</td>';
 							echo '<td nowrap>'.$dia.'</td>';
 							echo '<td class="float-center">'.date('H:i', strtotime($horario['recolha_hora'])).'</td>';
 							echo '<td nowrap>'.$horario['crianca'].'</td>';
