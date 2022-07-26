@@ -171,17 +171,11 @@ class Utilizador
 		return $count;
 	}*/
 
-	public static function Alerta($descricao, $utilizadorTelemovel = NULL)
+	public static function Alerta($descricao, $utilizadorTelemovel)
 	{
 		global $database;
 
-		if(is_null($utilizadorTelemovel))
-			$utilizadorTelemovel = $this->telemovel;
-
-		$result = $database->query("INSERT INTO `utilizadores_alertas` (`utilizador_telemovel`, `descricao`, `link`) VALUES ('$utilizadorTelemovel', '$descricao', '#')");
-
-		if($result)
-			var_dump($result);
+		$database->query("INSERT INTO `utilizadores_alertas` (`utilizador_telemovel`, `descricao`, `link`) VALUES ('$utilizadorTelemovel', '$descricao', '#')");
 	}
 
 	public function ObterAlertas($quantidade = NULL)
